@@ -1,0 +1,10 @@
+.git
+.gitignore
+.venv
+.venv-1
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+users.json
+

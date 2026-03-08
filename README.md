@@ -70,6 +70,26 @@ Optional flags:
 .\start.bat -Port 9000
 ```
 
+### Deploy Backend on Fly.io
+
+```bash
+# Install and login once
+fly auth login
+
+# Create app (if not already created)
+fly launch --no-deploy
+
+# Set Netlify frontend origin for CORS
+fly secrets set ALLOWED_ORIGINS=https://nyayasethu.netlify.app
+
+# Deploy
+fly deploy
+```
+
+After deploy, update frontend backend URL once:
+
+`https://nyayasethu.netlify.app/?api=https://<your-fly-app>.fly.dev`
+
 ### 1. Frontend (no build needed)
 
 ```bash

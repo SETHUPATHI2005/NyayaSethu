@@ -2,6 +2,7 @@
 from datetime import datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import secrets
 from typing import Any, Dict, List, Literal, Optional
@@ -25,9 +26,12 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").strip()
+cors_origins = ["*"] if allowed_origins == "*" else [o.strip() for o in allowed_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
