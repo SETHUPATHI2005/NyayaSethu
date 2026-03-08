@@ -1,0 +1,45 @@
+.legal-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 110px 24px 48px;
+}
+
+.legal-header {
+  margin-bottom: 20px;
+}
+
+.legal-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin: 8px 0;
+}
+
+.legal-sub {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.legal-card {
+  background: rgba(0, 18, 82, 0.72);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 22px;
+  margin-bottom: 14px;
+}
+
+.legal-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.legal-card p,
+.legal-card li {
+  color: var(--muted);
+  line-height: 1.85;
+  font-size: 14px;
+}
+
+.legal-card ul {
+  padding-left: 20px;
+}

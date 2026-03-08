@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legal Document Generator — NyayaSethu</title>
+  <link rel="stylesheet" href="global.css"/>
+  <link rel="stylesheet" href="document.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-symbol">⚖</span>
+        <span class="logo-text">Nyaya<strong>Sethu</strong></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="chat.html">Ask AI</a></li>
+        <li><a href="document.html" class="active">Documents</a></li>
+        <li><a href="aid.html">Legal Aid</a></li>
+        <li><a href="chat.html" class="nav-cta">Get Help Free</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="doc-layout">
+
+    <!-- LEFT: Template Selector -->
+    <aside class="doc-sidebar">
+      <div class="doc-sidebar-title">Document Templates</div>
+      <div class="doc-search-wrap">
+        <input type="text" id="templateSearch" placeholder="🔍 Search templates…" class="doc-search"/>
+      </div>
+
+      <div class="template-group">
+        <div class="tg-label">👷 Labour</div>
+        <button class="template-btn active" data-template="wrongful_termination">Wrongful Termination Complaint</button>
+        <button class="template-btn" data-template="wage_complaint">Unpaid Wages Complaint</button>
+        <button class="template-btn" data-template="pf_complaint">PF/ESI Grievance</button>
+        <button class="template-btn" data-template="maternity_leave">Maternity Leave Demand</button>
+      </div>
+
+      <div class="template-group">
+        <div class="tg-label">🛡️ Consumer</div>
+        <button class="template-btn" data-template="consumer_complaint">Consumer Court Complaint</button>
+        <button class="template-btn" data-template="refund_notice">Refund Legal Notice</button>
+        <button class="template-btn" data-template="online_fraud">Online Fraud Complaint</button>
+      </div>
+
+      <div class="template-group">
+        <div class="tg-label">👩 Women's Rights</div>
+        <button class="template-btn" data-template="domestic_violence">DV Protection Application</button>
+        <button class="template-btn" data-template="posh_complaint">POSH Workplace Complaint</button>
+      </div>
+
+      <div class="template-group">
+        <div class="tg-label">📄 RTI & Civic</div>
+        <button class="template-btn" data-template="rti_application">RTI Application</button>
+        <button class="template-btn" data-template="police_complaint">Police Complaint (FIR)</button>
+      </div>
+
+      <div class="template-group">
+        <div class="tg-label">🏡 Property</div>
+        <button class="template-btn" data-template="eviction_notice">Tenant Eviction Notice</button>
+        <button class="template-btn" data-template="rent_dispute">Rent Dispute Complaint</button>
+      </div>
+    </aside>
+
+    <!-- MIDDLE: Form -->
+    <main class="doc-main">
+      <div class="doc-header">
+        <div>
+          <div class="section-label">Document Generator</div>
+          <h1 id="docTitle">Wrongful Termination Complaint</h1>
+          <p id="docDesc" class="doc-desc">Under the Industrial Disputes Act, 1947 — Section 25F &amp; 25G</p>
+        </div>        <div class="doc-lang-wrap">
+          <label>Output Language</label>
+          <select id="docLang" class="doc-lang-select">
+            <option value="en">English</option>
+            <option value="as">Assamese</option>
+            <option value="bn">Bengali</option>
+            <option value="brx">Bodo</option>
+            <option value="doi">Dogri</option>
+            <option value="gu">Gujarati</option>
+            <option value="hi">Hindi</option>
+            <option value="kn">Kannada</option>
+            <option value="ks">Kashmiri</option>
+            <option value="kok">Konkani</option>
+            <option value="mai">Maithili</option>
+            <option value="ml">Malayalam</option>
+            <option value="mni">Manipuri</option>
+            <option value="mr">Marathi</option>
+            <option value="ne">Nepali</option>
+            <option value="or">Odia</option>
+            <option value="pa">Punjabi</option>
+            <option value="sa">Sanskrit</option>
+            <option value="sat">Santali</option>
+            <option value="sd">Sindhi</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="ur">Urdu</option>
+          </select>
+        </div>      </div>
+
+      <!-- Dynamic form -->
+      <div class="doc-form-wrap" id="docFormWrap">
+        <form id="docForm" class="doc-form">
+          <!-- Fields rendered by JS based on template -->
+        </form>
+        <div class="doc-form-actions">
+          <button type="button" class="btn-ghost" id="clearFormBtn">Clear Form</button>
+          <button type="button" class="btn-primary" id="generateBtn">
+            <span id="generateBtnText">Generate Document →</span>
+            <span id="generateSpinner" class="spinner hidden"></span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT: Preview -->
+    <aside class="doc-preview-panel" id="previewPanel">
+      <div class="preview-topbar">
+        <span>Document Preview</span>
+        <div class="preview-actions">
+          <button class="preview-btn" id="copyDocBtn" title="Copy text">📋</button>
+          <button class="preview-btn" id="downloadDocBtn" title="Download .txt">⬇ Download</button>
+          <button class="preview-btn" id="printDocBtn" title="Print">🖨</button>
+        </div>
+      </div>
+      <div class="preview-body" id="previewBody">
+        <div class="preview-placeholder">
+          <div class="pp-icon">📄</div>
+          <p>Fill in the form and click <strong>Generate Document</strong> to see your document here.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="document.js"></script>
+</body>
+</html>
+
+
+

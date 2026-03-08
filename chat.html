@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ask NyayaSethu — AI Legal Chat</title>
+  <link rel="stylesheet" href="global.css"/>
+  <link rel="stylesheet" href="chat.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body class="chat-page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-symbol">⚖</span>
+        <span class="logo-text">Nyaya<strong>Sethu</strong></span>
+      </a>
+      <button class="sidebar-close" id="sidebarClose">✕</button>
+    </div>
+
+    <button class="new-chat-btn" id="newChatBtn">
+      + New Conversation
+    </button>
+
+    <div class="sidebar-section-label">Quick Topics</div>
+    <div class="topic-chips">
+      <button class="topic-chip" data-q="What are my rights if I am fired without notice?">👷 Wrongful Termination</button>
+      <button class="topic-chip" data-q="How do I file a consumer complaint for defective product?">🛡️ Consumer Complaint</button>
+      <button class="topic-chip" data-q="What is the process to file an RTI application?">📄 File RTI</button>
+      <button class="topic-chip" data-q="What legal protection do women have against domestic violence?">👩 Domestic Violence</button>
+      <button class="topic-chip" data-q="How can I check my PM-KISAN eligibility?">🏥 Govt Schemes</button>
+      <button class="topic-chip" data-q="What are my rights as a tenant in India?">🏡 Tenant Rights</button>
+    </div>    <div class="sidebar-section-label">Language</div>
+    <select class="lang-select" id="langSelect">
+      <option value="en">English</option>
+      <option value="as">Assamese</option>
+      <option value="bn">Bengali</option>
+      <option value="brx">Bodo</option>
+      <option value="doi">Dogri</option>
+      <option value="gu">Gujarati</option>
+      <option value="hi">Hindi</option>
+      <option value="kn">Kannada</option>
+      <option value="ks">Kashmiri</option>
+      <option value="kok">Konkani</option>
+      <option value="mai">Maithili</option>
+      <option value="ml">Malayalam</option>
+      <option value="mni">Manipuri</option>
+      <option value="mr">Marathi</option>
+      <option value="ne">Nepali</option>
+      <option value="or">Odia</option>
+      <option value="pa">Punjabi</option>
+      <option value="sa">Sanskrit</option>
+      <option value="sat">Santali</option>
+      <option value="sd">Sindhi</option>
+      <option value="ta">Tamil</option>
+      <option value="te">Telugu</option>
+      <option value="ur">Urdu</option>
+    </select>
+
+    <div class="sidebar-section-label">History</div>
+    <div class="chat-history" id="chatHistory">
+      <div class="history-item active">Current conversation</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="document.html" class="sidebar-link">📄 Generate Document</a>
+      <a href="aid.html" class="sidebar-link">📍 Find Legal Aid</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CHAT AREA -->
+  <div class="chat-main" id="chatMain">
+
+    <!-- Top bar -->
+    <div class="chat-topbar">
+      <button class="topbar-menu" id="sidebarToggle">☰</button>
+      <div class="topbar-info">
+        <span class="status-dot"></span>
+        <span>NyayaSethu — Legal AI</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="voiceToggle" title="Voice input">🎤</button>
+        <button class="topbar-btn" title="Clear chat" id="clearChat">🗑</button>
+      </div>
+    </div>
+
+    <!-- Messages area -->
+    <div class="messages-area" id="messagesArea">
+
+      <!-- Welcome state -->
+      <div class="welcome-state" id="welcomeState">
+        <div class="welcome-icon">⚖️</div>
+        <h2>How can I help you today?</h2>
+        <p>Ask any legal question in your language. I'll provide guidance based on Indian law.</p>
+        <div class="welcome-suggestions">
+          <button class="suggestion-card" data-q="What are my rights if I am fired without notice?">
+            <span>👷</span>
+            <div>
+              <strong>Wrongful Termination</strong>
+              <small>Labour & Employment rights</small>
+            </div>
+          </button>
+          <button class="suggestion-card" data-q="My landlord is not returning my security deposit. What can I do?">
+            <span>🏡</span>
+            <div>
+              <strong>Tenant Dispute</strong>
+              <small>Property & Rent laws</small>
+            </div>
+          </button>
+          <button class="suggestion-card" data-q="I received a defective product from an online store. How do I complain?">
+            <span>🛡️</span>
+            <div>
+              <strong>Consumer Complaint</strong>
+              <small>Consumer Protection Act</small>
+            </div>
+          </button>
+          <button class="suggestion-card" data-q="What schemes is a small farmer eligible for?">
+            <span>🌾</span>
+            <div>
+              <strong>Farmer Schemes</strong>
+              <small>Government welfare programs</small>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages will be injected here -->
+      <div id="messagesList"></div>
+
+      <!-- Typing indicator -->
+      <div class="typing-indicator hidden" id="typingIndicator">
+        <span class="bot-avatar-sm">⚖</span>
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <!-- Input area -->
+    <div class="chat-input-area">
+      <div class="input-disclaimer">NyayaSethu provides legal information, not legal advice. For serious matters, consult an advocate.</div>
+      <div class="input-row">
+        <button class="input-btn" id="attachBtn" title="Attach document">📎</button>
+        <textarea
+          id="userInput"
+          class="chat-textarea"
+          placeholder="Ask your legal question in any language… (e.g. मेरे अधिकार क्या हैं?)"
+          rows="1"
+        ></textarea>
+        <button class="input-btn mic-btn" id="micBtn" title="Voice input">🎤</button>
+        <button class="send-btn" id="sendBtn" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
+
+
+

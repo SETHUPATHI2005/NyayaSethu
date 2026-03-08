@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NyayaSethu — Legal AI for Every Indian</title>
+  <link rel="stylesheet" href="global.css"/>
+  <link rel="stylesheet" href="landing.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@300;400;600;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-symbol">⚖</span>
+        <span class="logo-text">Nyaya<strong>Sethu</strong></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="chat.html">Ask AI</a></li>
+        <li><a href="document.html">Documents</a></li>
+        <li><a href="aid.html">Legal Aid</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html" class="nav-cta">Register Free</a></li>
+      </ul>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-mobile" id="mobileMenu">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="chat.html">Ask AI</a>
+      <a href="document.html">Documents</a>
+      <a href="aid.html">Legal Aid</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-circle c1"></div>
+      <div class="hero-circle c2"></div>
+      <div class="hero-grid"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-eyebrow">
+          <span class="dot"></span>
+          <span>Free Legal Guidance · 22 Indian Languages</span>
+        </div>
+        <h1 class="hero-title">
+          Know Your<br/>
+          <em>Rights.</em><br/>
+          Get Justice.
+        </h1>
+        <p class="hero-sub">
+          NyayaSethu uses AI to give every Indian — farmer, worker, student — instant access to legal help in their own language. No lawyer fees. No jargon.
+        </p>
+        <div class="hero-devanagari">न्याय सबके लिए</div>
+        <div class="hero-actions">
+          <a href="chat.html" class="btn-primary">Ask a Legal Question →</a>
+          <a href="register.html" class="btn-ghost">Create Free Account</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong>22+</strong><span>Languages</span></div>
+          <div class="stat-div"></div>
+          <div class="stat"><strong>500+</strong><span>Laws Covered</span></div>
+          <div class="stat-div"></div>
+          <div class="stat"><strong>Free</strong><span>Always</span></div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="chat-preview">
+          <div class="chat-preview-bar">
+            <span class="cp-dot r"></span><span class="cp-dot y"></span><span class="cp-dot g"></span>
+            <span class="cp-title">NyayaSethu Chat</span>
+          </div>
+          <div class="chat-preview-body">
+            <div class="cp-msg user">मेरे मालिक ने मुझे बिना नोटिस के निकाल दिया। मैं क्या करूँ?</div>
+            <div class="cp-msg bot">
+              <span class="bot-avatar">⚖</span>
+              <div class="bot-bubble">
+                Under the <strong>Industrial Disputes Act, 1947</strong>, your employer must give you 1 month's notice or pay. You can file a complaint with the Labour Commissioner within 3 years.
+                <div class="bot-actions-row">
+                  <button onclick="window.location='document.html'">📄 Generate Complaint</button>
+                  <button onclick="window.location='aid.html'">📍 Find Labour Office</button>
+                </div>
+              </div>
+            </div>
+            <div class="cp-msg user">What about my pending salary?</div>
+            <div class="cp-msg bot">
+              <span class="bot-avatar">⚖</span>
+              <div class="bot-bubble">
+                Under the <strong>Payment of Wages Act</strong>, unpaid wages can be recovered. File Form A at the nearest Labour Court — I can generate that form for you.
+              </div>
+            </div>
+            <div class="cp-typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="chat-preview-input">
+            <input type="text" placeholder="Type your legal question…" readonly/>
+            <a href="chat.html" class="cp-send">→</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="container">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">Simple as asking a friend</h2>
+      <div class="steps">
+        <div class="step" style="--i:0">
+          <div class="step-num">01</div>
+          <div class="step-icon">🗣️</div>
+          <h3>Ask in Any Language</h3>
+          <p>Type or speak your question in Hindi, Tamil, Telugu, Bengali, or any of 22 Indian languages.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="--i:1">
+          <div class="step-num">02</div>
+          <div class="step-icon">🧠</div>
+          <h3>AI Understands</h3>
+          <p>Our fine-tuned legal AI searches 500+ Indian laws and court precedents to find the right answer.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="--i:2">
+          <div class="step-num">03</div>
+          <div class="step-icon">📋</div>
+          <h3>Get Guidance</h3>
+          <p>Receive plain-language advice, ready-to-file documents, and nearest legal aid contacts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COVERAGE -->
+  <section class="coverage">
+    <div class="container">
+      <div class="section-label">What We Cover</div>
+      <h2 class="section-title">Every area of law that matters to you</h2>
+      <div class="law-grid">
+        <div class="law-card" style="--c:#FF6B35">
+          <div class="lc-icon">🏛️</div>
+          <h3>Constitutional Rights</h3>
+          <p>Fundamental rights, RTI, PILs, and civic entitlements under the Indian Constitution.</p>
+          <a href="chat.html?topic=constitution">Ask →</a>
+        </div>
+        <div class="law-card" style="--c:#E8C547">
+          <div class="lc-icon">👷</div>
+          <h3>Labour Laws</h3>
+          <p>Minimum wage, wrongful termination, ESI, PF, maternity benefits, and workplace rights.</p>
+          <a href="chat.html?topic=labour">Ask →</a>
+        </div>
+        <div class="law-card" style="--c:#22D3EE">
+          <div class="lc-icon">🛡️</div>
+          <h3>Consumer Protection</h3>
+          <p>Defective products, fraud, online scams, and filing consumer court complaints.</p>
+          <a href="chat.html?topic=consumer">Ask →</a>
+        </div>
+        <div class="law-card" style="--c:#F472B6">
+          <div class="lc-icon">👩</div>
+          <h3>Women's Rights</h3>
+          <p>Domestic violence, workplace harassment, dowry laws, and protection orders.</p>
+          <a href="chat.html?topic=women">Ask →</a>
+        </div>
+        <div class="law-card" style="--c:#34D399">
+          <div class="lc-icon">🏡</div>
+          <h3>Property & Land</h3>
+          <p>Land acquisition, tenancy disputes, inheritance, and registration guidance.</p>
+          <a href="chat.html?topic=property">Ask →</a>
+        </div>
+        <div class="law-card" style="--c:#818CF8">
+          <div class="lc-icon">🏥</div>
+          <h3>Government Schemes</h3>
+          <p>PM-KISAN, Ayushman Bharat, MGNREGA, and 200+ welfare scheme eligibility checks.</p>
+          <a href="chat.html?topic=schemes">Ask →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LANGUAGE STRIP -->
+  <section class="lang-strip">
+    <div class="lang-inner">
+      <span>Speak to us in:</span>
+      <div class="lang-scroll">
+        <span>हिन्दी</span><span>தமிழ்</span><span>తెలుగు</span><span>বাংলা</span>
+        <span>ಕನ್ನಡ</span><span>മലയാളം</span><span>ਪੰਜਾਬੀ</span><span>ગુજરાતી</span>
+        <span>اردو</span><span>অসমীয়া</span><span>English</span><span>हिन्दी</span>
+        <span>தமிழ்</span><span>తెలుగు</span><span>বাংলা</span><span>ಕನ್ನಡ</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner">
+    <div class="container">
+      <div class="cta-inner">
+        <div>
+          <h2>Legal help shouldn't be a privilege.</h2>
+          <p>Ask your first question — free, now, in your language.</p>
+        </div>
+        <a href="chat.html" class="btn-primary large">Start Now →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo"><span class="logo-symbol">⚖</span><span class="logo-text">Nyaya<strong>Sethu</strong></span></div>
+          <p>AI-powered legal guidance for every Indian. Free. Multilingual. Always available.</p>
+          <div class="footer-disclaimer">⚠ NyayaSethu provides legal information, not legal advice. For complex matters, consult a qualified advocate.</div>
+        </div>
+        <div class="footer-links">
+          <h4>Features</h4>
+          <a href="chat.html">AI Legal Chat</a>
+          <a href="document.html">Document Generator</a>
+          <a href="aid.html">Find Legal Aid</a>
+        </div>
+        <div class="footer-links">
+          <h4>Law Topics</h4>
+          <a href="chat.html?topic=labour">Labour Laws</a>
+          <a href="chat.html?topic=consumer">Consumer Rights</a>
+          <a href="chat.html?topic=women">Women's Rights</a>
+          <a href="chat.html?topic=constitution">Constitution</a>
+        </div>
+        <div class="footer-links">
+          <h4>Help</h4>
+          <a href="about.html">About NyayaSethu</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 NyayaSethu. Built for Bharat.</span>
+        <span>🇮🇳 Made in India</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="nav.js"></script>
+  <script src="landing.js"></script>
+</body>
+</html>
+
+
+

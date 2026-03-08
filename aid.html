@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Find Legal Aid — NyayaSethu</title>
+  <link rel="stylesheet" href="global.css"/>
+  <link rel="stylesheet" href="aid.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-symbol">⚖</span>
+        <span class="logo-text">Nyaya<strong>Sethu</strong></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="chat.html">Ask AI</a></li>
+        <li><a href="document.html">Documents</a></li>
+        <li><a href="aid.html" class="active">Legal Aid</a></li>
+        <li><a href="chat.html" class="nav-cta">Get Help Free</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="aid-layout">
+
+    <!-- LEFT PANEL -->
+    <div class="aid-panel">
+      <div class="aid-panel-header">
+        <div class="section-label">Legal Aid Finder</div>
+        <h1>Find Help Near You</h1>
+        <p>Locate free legal aid centres, lawyers, Labour offices, consumer courts, and more.</p>
+      </div>
+
+      <!-- Search -->
+      <div class="aid-search-box">
+        <div class="aid-location-row">
+          <input type="text" id="locationInput" placeholder="Enter city, district, or pincode…" class="aid-input"/>
+          <button class="locate-btn" id="locateBtn" title="Use my location">📍 Use Location</button>
+        </div>
+        <div class="aid-type-filters">
+          <button class="filter-btn active" data-type="all">All</button>
+          <button class="filter-btn" data-type="legal_aid">Legal Aid</button>
+          <button class="filter-btn" data-type="labour">Labour Office</button>
+          <button class="filter-btn" data-type="consumer">Consumer Court</button>
+          <button class="filter-btn" data-type="women">Women Helpdesk</button>
+          <button class="filter-btn" data-type="police">Police Station</button>
+        </div>
+        <button class="btn-primary full-width" id="searchAidBtn">Search →</button>
+      </div>
+
+      <!-- Emergency Numbers -->
+      <div class="emergency-box">
+        <div class="emergency-title">🚨 Emergency Helplines</div>
+        <div class="helplines-grid">
+          <div class="helpline"><span>👮</span><div><strong>Police</strong><a href="tel:100">100</a></div></div>
+          <div class="helpline"><span>👩</span><div><strong>Women Helpline</strong><a href="tel:1091">1091</a></div></div>
+          <div class="helpline"><span>⚖️</span><div><strong>Legal Aid</strong><a href="tel:15100">15100</a></div></div>
+          <div class="helpline"><span>👷</span><div><strong>Labour Helpline</strong><a href="tel:14567">14567</a></div></div>
+          <div class="helpline"><span>🛡️</span><div><strong>Consumer</strong><a href="tel:1800114000">1800-114-000</a></div></div>
+          <div class="helpline"><span>🌾</span><div><strong>Kisan Call</strong><a href="tel:18001801551">1800-180-1551</a></div></div>
+        </div>
+      </div>
+
+      <!-- Results list -->
+      <div class="results-section" id="resultsSection">
+        <div class="results-header">
+          <span id="resultsCount">Showing results near <strong>your location</strong></span>
+          <select id="sortSelect" class="sort-select">
+            <option value="distance">Nearest first</option>
+            <option value="rating">Highest rated</option>
+          </select>
+        </div>
+        <div id="aidResults" class="aid-results-list">
+          <!-- Default demo cards -->
+          <div class="aid-card" data-type="legal_aid">
+            <div class="aid-card-header">
+              <div class="aid-type-badge legal_aid">Legal Aid</div>
+              <div class="aid-distance">2.1 km</div>
+            </div>
+            <h3>District Legal Services Authority</h3>
+            <div class="aid-meta">
+              <span>📍 Court Complex, Civil Lines</span>
+              <span>⏰ Mon–Sat, 10am–5pm</span>
+              <span>✅ Free Services</span>
+            </div>
+            <div class="aid-card-actions">
+              <a href="tel:+91-XXXXXXXXXX" class="aid-btn call">📞 Call</a>
+              <button class="aid-btn directions" onclick="openDirections(this)">🗺 Directions</button>
+              <button class="aid-btn chat-ref" onclick="window.location='chat.html'">💬 Ask AI First</button>
+            </div>
+          </div>
+          <div class="aid-card" data-type="labour">
+            <div class="aid-card-header">
+              <div class="aid-type-badge labour">Labour Office</div>
+              <div class="aid-distance">3.4 km</div>
+            </div>
+            <h3>Office of Labour Commissioner</h3>
+            <div class="aid-meta">
+              <span>📍 Industrial Area, Sector 4</span>
+              <span>⏰ Mon–Fri, 9:30am–5:30pm</span>
+              <span>📞 Labour Disputes, Wage Claims</span>
+            </div>
+            <div class="aid-card-actions">
+              <a href="tel:14567" class="aid-btn call">📞 14567</a>
+              <button class="aid-btn directions" onclick="openDirections(this)">🗺 Directions</button>
+              <button class="aid-btn chat-ref" onclick="window.location='chat.html'">💬 Ask AI First</button>
+            </div>
+          </div>
+          <div class="aid-card" data-type="consumer">
+            <div class="aid-card-header">
+              <div class="aid-type-badge consumer">Consumer Court</div>
+              <div class="aid-distance">4.8 km</div>
+            </div>
+            <h3>District Consumer Disputes Redressal Commission</h3>
+            <div class="aid-meta">
+              <span>📍 Near Civil Court, Main Road</span>
+              <span>⏰ Mon–Sat, 10am–4pm</span>
+              <span>💰 ₹200 filing fee</span>
+            </div>
+            <div class="aid-card-actions">
+              <a href="tel:1800114000" class="aid-btn call">📞 1800-114-000</a>
+              <button class="aid-btn directions" onclick="openDirections(this)">🗺 Directions</button>
+              <button class="aid-btn chat-ref" onclick="window.location='chat.html'">💬 Ask AI First</button>
+            </div>
+          </div>
+          <div class="aid-card" data-type="women">
+            <div class="aid-card-header">
+              <div class="aid-type-badge women">Women Helpdesk</div>
+              <div class="aid-distance">1.2 km</div>
+            </div>
+            <h3>One Stop Centre (Sakhi)</h3>
+            <div class="aid-meta">
+              <span>📍 Government Hospital Premises</span>
+              <span>⏰ 24 × 7</span>
+              <span>✅ Free · Confidential</span>
+            </div>
+            <div class="aid-card-actions">
+              <a href="tel:181" class="aid-btn call">📞 181</a>
+              <button class="aid-btn directions" onclick="openDirections(this)">🗺 Directions</button>
+              <button class="aid-btn chat-ref" onclick="window.location='chat.html'">💬 Ask AI First</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Map placeholder -->
+    <div class="aid-map-panel" id="mapPanel">
+      <div class="map-placeholder" id="mapPlaceholder">
+        <div class="mp-icon">🗺️</div>
+        <h3>Interactive Map</h3>
+        <p>Enter your location and search to see legal aid centres on the map.</p>
+        <p class="mp-note">In production: integrates with Google Maps / OpenStreetMap API</p>
+      </div>
+      <div id="mapContainer" class="map-container hidden">
+        <!-- Map renders here via Maps JS API -->
+      </div>
+      <!-- Floating legend -->
+      <div class="map-legend">
+        <div class="legend-item"><span class="legend-dot legal_aid"></span> Legal Aid</div>
+        <div class="legend-item"><span class="legend-dot labour"></span> Labour Office</div>
+        <div class="legend-item"><span class="legend-dot consumer"></span> Consumer Court</div>
+        <div class="legend-item"><span class="legend-dot women"></span> Women Helpdesk</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="aid.js"></script>
+</body>
+</html>
+
+

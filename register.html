@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register - NyayaSethu</title>
+  <link rel="stylesheet" href="global.css"/>
+  <link rel="stylesheet" href="auth.css"/>
+</head>
+<body class="auth-page">
+  <nav class="nav solid" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-symbol">&#9878;</span>
+        <span class="logo-text">Nyaya<strong>Sethu</strong></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="auth-wrap">
+    <section class="auth-card">
+      <h1>Create Account</h1>
+      <p>Register once to save your NyayaSethu access.</p>
+      <form id="registerForm" class="auth-form">
+        <label for="full_name">Full Name</label>
+        <input id="full_name" type="text" required minlength="2" placeholder="Your full name"/>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" required placeholder="you@example.com"/>
+
+        <label for="password">Password</label>
+        <input id="password" type="password" required minlength="6" placeholder="At least 6 characters"/>
+
+        <button type="submit" class="btn-primary full-width">Register</button>
+        <div id="authMsg" class="auth-msg"></div>
+      </form>
+      <div class="auth-foot">Already registered? <a href="login.html">Login</a></div>
+    </section>
+  </main>
+
+  <script src="auth.js"></script>
+</body>
+</html>
+
+

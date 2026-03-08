@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - NyayaSethu</title>
+  <link rel="stylesheet" href="global.css"/>
+  <link rel="stylesheet" href="dashboard.css"/>
+</head>
+<body>
+  <nav class="nav solid" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-symbol">&#9878;</span>
+        <span class="logo-text">Nyaya<strong>Sethu</strong></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="chat.html">Ask AI</a></li>
+        <li><a href="document.html">Documents</a></li>
+        <li><a href="aid.html">Legal Aid</a></li>
+        <li><button id="logoutBtn" class="nav-cta">Logout</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="dashboard-wrap">
+    <section class="dash-hero">
+      <p class="section-label">User Dashboard</p>
+      <h1 id="welcomeName">Welcome</h1>
+      <p id="welcomeEmail" class="dash-sub">Manage your legal support journey from one place.</p>
+    </section>
+
+    <section class="dash-grid">
+      <article class="dash-card">
+        <h2>Quick Actions</h2>
+        <div class="dash-actions">
+          <a href="chat.html" class="btn-primary">Ask Legal Question</a>
+          <a href="document.html" class="btn-ghost">Generate Document</a>
+          <a href="aid.html" class="btn-ghost">Find Legal Aid</a>
+        </div>
+      </article>
+
+      <article class="dash-card">
+        <h2>Account</h2>
+        <div class="dash-meta">
+          <div><span>Name</span><strong id="metaName">-</strong></div>
+          <div><span>Email</span><strong id="metaEmail">-</strong></div>
+          <div><span>Status</span><strong>Active</strong></div>
+        </div>
+      </article>
+
+      <article class="dash-card full">
+        <h2>Getting Started</h2>
+        <ol>
+          <li>Ask your issue in your language on the AI Chat page.</li>
+          <li>Generate a complaint or legal document with one click.</li>
+          <li>Use Legal Aid finder to contact nearby offices quickly.</li>
+        </ol>
+      </article>
+    </section>
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
+
+
