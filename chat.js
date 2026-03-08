@@ -1,4 +1,4 @@
-const API = 'http://localhost:8000';
+const API = window.NYAYASETHU_API || '';
 let history = [], isWaiting = false;
 
 const sidebar = document.getElementById('sidebar');
@@ -128,7 +128,12 @@ async function sendMessage(text, displayText = text) {
     history.push({ role: 'assistant', content: data.answer });
   } catch {
     typingIndicator.classList.add('hidden');
-    addBotMsg({ answer: '⚠ Backend not connected. Run `uvicorn main:app --reload` at port 8000, then retry.', laws_cited: [], suggested_actions: [], confidence: 0 });
+    addBotMsg({
+      answer: 'Backend not connected. Local: run `python -m uvicorn main:app --port 8000`. Production: open this page with `?api=https://your-backend-url` once.',
+      laws_cited: [],
+      suggested_actions: [],
+      confidence: 0
+    });
   }
   isWaiting = false;
   sendBtn.disabled = !userInput.value.trim();

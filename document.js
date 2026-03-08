@@ -1,4 +1,4 @@
-const API = 'http://localhost:8000';
+const API = window.NYAYASETHU_API || '';
 
 const TEMPLATES = {
   wrongful_termination: {

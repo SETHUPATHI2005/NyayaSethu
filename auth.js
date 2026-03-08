@@ -1,4 +1,4 @@
-const API = 'http://localhost:8000';
+const API = window.NYAYASETHU_API || '';
 
 function setMsg(text, ok = false) {
   const el = document.getElementById('authMsg');
@@ -30,7 +30,7 @@ if (loginForm) {
       setMsg('Login successful. Redirecting...', true);
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
     } catch {
-      setMsg('Unable to connect to backend.');
+      setMsg('Unable to connect to backend. Open this page with ?api=https://your-backend-url once.');
     }
   });
 }
@@ -59,7 +59,7 @@ if (registerForm) {
       setMsg('Registration successful. Redirecting...', true);
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
     } catch {
-      setMsg('Unable to connect to backend.');
+      setMsg('Unable to connect to backend. Open this page with ?api=https://your-backend-url once.');
     }
   });
 }
