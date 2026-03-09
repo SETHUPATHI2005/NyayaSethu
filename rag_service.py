@@ -5,10 +5,48 @@ Embeds queries and retrieves relevant legal context from vector DB.
 import os
 import json
 import logging
+import re
 from typing import List, Dict, Any
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+STOPWORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "how",
+    "i", "in", "is", "it", "me", "my", "of", "on", "or", "the", "to", "was",
+    "what", "when", "where", "which", "who", "with", "can", "do", "does",
+    "please", "about", "under", "law", "legal", "india", "indian"
+}
+
+TOKEN_ALIASES = {
+    "murder": {"homicide", "bns", "ipc"},
+    "theft": {"steal", "stolen", "bns", "ipc"},
+    "fir": {"bnss", "crpc", "police"},
+    "arrest": {"bnss", "crpc"},
+    "evidence": {"bsa", "sakshya"},
+    "contract": {"agreement"},
+    "constitution": {"article", "fundamental", "rights"},
+    "wages": {"salary", "labour"},
+    "consumer": {"refund", "defective"},
+    "domestic": {"violence", "women"},
+    "rti": {"information"},
+    "bns": {"bharatiya", "nyaya", "sanhita", "ipc"},
+    "bnss": {"bharatiya", "nagarik", "suraksha", "sanhita", "crpc"},
+    "bsa": {"bharatiya", "sakshya", "adhiniyam", "evidence"},
+}
+
+TOPIC_HINTS = {
+    "criminal": {"bns", "ipc", "murder", "theft", "offence", "offense", "assault"},
+    "criminal_procedure": {"bnss", "crpc", "fir", "arrest", "bail", "chargesheet", "trial"},
+    "evidence": {"bsa", "evidence", "admissible", "witness", "burden"},
+    "constitutional": {"constitution", "article", "fundamental", "rights", "speech", "equality"},
+    "civil": {"contract", "agreement", "breach", "damages", "consideration"},
+    "labour": {"wages", "salary", "termination", "retrenchment", "employment", "pf", "esi"},
+    "consumer": {"consumer", "refund", "defective", "complaint", "service"},
+    "women": {"domestic", "violence", "posh", "harassment", "maternity"},
+    "rti": {"rti", "information", "pio"},
+    "property": {"rent", "tenant", "landlord", "eviction", "property"},
+}
 
 # â”€â”€ Lazy imports so the app starts even without GPU deps â”€â”€
 def _try_import_faiss():
@@ -41,6 +79,8 @@ class RAGService:
         self.ST        = _try_import_sentence_transformers()
         self.model     = None
         self.index     = None
+        self.loaded_files: List[str] = []
+        self.using_fallback: bool = False
         self.corpus    = self._load_corpus()
         self._init_vector_index()
 
@@ -49,12 +89,14 @@ class RAGService:
         """Load legal knowledge base from JSON files."""
         data_dir = Path(__file__).parent.parent / "data"
         corpus = []
+        loaded_files = []
 
         for json_file in data_dir.glob("*.json"):
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     entries = json.load(f)
                     corpus.extend(entries)
+                loaded_files.append(json_file.name)
                 logger.info(f"Loaded {len(entries)} entries from {json_file.name}")
             except Exception as e:
                 logger.error(f"Error loading {json_file}: {e}")
@@ -62,6 +104,11 @@ class RAGService:
         if not corpus:
             # Seed with built-in fallback corpus
             corpus = FALLBACK_CORPUS
+            self.using_fallback = True
+            self.loaded_files = []
+        else:
+            self.using_fallback = False
+            self.loaded_files = loaded_files
 
         logger.info(f"Total corpus size: {len(corpus)} entries")
         return corpus
@@ -107,16 +154,105 @@ class RAGService:
         return results
 
     def _keyword_search(self, query: str, top_k: int) -> List[Dict]:
-        """Simple TF-style keyword matching fallback."""
-        q_words = set(query.lower().split())
+        """Keyword fallback with token normalization and topic fallback."""
+        q_tokens = self._expand_tokens(self._tokenize(query))
         scored = []
+
         for entry in self.corpus:
-            text_words = set(entry["text"].lower().split())
-            overlap = len(q_words & text_words)
-            if overlap > 0:
-                scored.append((overlap, entry))
+            search_blob = " ".join(
+                [
+                    entry.get("text", ""),
+                    entry.get("source", ""),
+                    " ".join(entry.get("acts", [])),
+                    entry.get("topic", ""),
+                ]
+            )
+            e_tokens = self._tokenize(search_blob)
+            overlap = q_tokens & e_tokens
+            if not overlap:
+                continue
+            # Favor stronger overlap and exact phrase containment.
+            score = float(len(overlap))
+            q_lower = query.lower()
+            source_lower = entry.get("source", "").lower()
+            if q_lower and q_lower in source_lower:
+                score += 4.0
+            if "section" in q_lower and "section" in entry.get("text", "").lower():
+                score += 1.0
+            scored.append((score, entry))
+
         scored.sort(key=lambda x: x[0], reverse=True)
-        return [e for _, e in scored[:top_k]]
+        ranked = [e for _, e in scored[:top_k]]
+        if ranked:
+            return ranked
+        return self._topic_fallback(query, top_k)
+
+    def _tokenize(self, text: str) -> set:
+        tokens = set(re.findall(r"[a-z0-9]+", text.lower()))
+        return {t for t in tokens if len(t) > 1 and t not in STOPWORDS}
+
+    def _expand_tokens(self, tokens: set) -> set:
+        expanded = set(tokens)
+        for token in list(tokens):
+            expanded |= TOKEN_ALIASES.get(token, set())
+        return expanded
+
+    def _topic_fallback(self, query: str, top_k: int) -> List[Dict]:
+        q_tokens = self._expand_tokens(self._tokenize(query))
+        # Try topic detection first.
+        for topic, hints in TOPIC_HINTS.items():
+            if q_tokens & hints:
+                topic_entries = [e for e in self.corpus if e.get("topic") == topic]
+                if topic_entries:
+                    return topic_entries[:top_k]
+        # Last resort: return foundational entries to avoid empty context.
+        return self.corpus[:top_k]
+
+    def get_coverage_stats(self) -> Dict[str, Any]:
+        """Return summary coverage stats for currently loaded legal corpus."""
+        topics: Dict[str, int] = {}
+        languages: Dict[str, int] = {}
+        source_sites: Dict[str, int] = {}
+        unique_acts = set()
+        unique_sources = set()
+
+        for entry in self.corpus:
+            topic = str(entry.get("topic", "unknown")).strip() or "unknown"
+            topics[topic] = topics.get(topic, 0) + 1
+
+            language = str(entry.get("language", "en")).strip() or "en"
+            languages[language] = languages.get(language, 0) + 1
+
+            source_site = str(entry.get("source_site", "fallback")).strip() or "fallback"
+            source_sites[source_site] = source_sites.get(source_site, 0) + 1
+
+            source = str(entry.get("source", "")).strip()
+            if source:
+                unique_sources.add(source)
+
+            for act in entry.get("acts", []):
+                act_name = str(act).strip()
+                if act_name:
+                    unique_acts.add(act_name)
+
+        sorted_topics = dict(sorted(topics.items(), key=lambda kv: kv[1], reverse=True))
+        sorted_languages = dict(sorted(languages.items(), key=lambda kv: kv[1], reverse=True))
+        sorted_sites = dict(sorted(source_sites.items(), key=lambda kv: kv[1], reverse=True))
+
+        return {
+            "total_records": len(self.corpus),
+            "unique_acts": len(unique_acts),
+            "unique_sources": len(unique_sources),
+            "topics": sorted_topics,
+            "languages": sorted_languages,
+            "source_sites": sorted_sites,
+            "loaded_files": self.loaded_files,
+            "using_fallback_corpus": self.using_fallback,
+            "coverage_note": (
+                "This reports currently loaded corpus coverage, not a legal guarantee "
+                "that all Indian central/state laws are present."
+            ),
+        }
 
 
 # â”€â”€ Fallback in-memory legal corpus â”€â”€

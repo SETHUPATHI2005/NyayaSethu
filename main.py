@@ -223,6 +223,11 @@ def health() -> Dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/api/laws/coverage")
+def laws_coverage() -> Dict[str, Any]:
+    return rag_service.get_coverage_stats()
+
+
 @app.post("/api/auth/register")
 def register(req: RegisterRequest) -> JSONResponse:
     email = _normalize_email(req.email)

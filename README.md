@@ -72,6 +72,9 @@ Optional flags:
 .\start.bat -ForceLawsRefresh
 .\start.bat -SkipLawsBuild
 .\start.bat -TranslateLangs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur -TranslateMaxRecords 500
+.\start.bat -EnableOfflineLanguages
+.\start.bat -EnableOfflineLanguages -OfflineLangs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur
+.\start.bat -EnableOfflineLanguages -ForceOfflinePackInstall
 ```
 
 ### Deploy Backend on Fly.io
@@ -208,6 +211,46 @@ After files are generated, restart backend and it will auto-load these JSON file
 - **22 Indian languages** supported for voice input (Web Speech API)
 - **Response translation** via Google Translate (free tier)
 - For production: switch to **Azure Translator** or **DeepL** for accuracy
+
+### Offline Language Mode
+
+NyayaSethu now supports offline-first translation for chat responses using Argos Translate.
+
+1. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Install offline language packs once (requires internet only during installation):
+
+```bash
+python install_offline_language_packs.py --langs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur
+```
+
+3. Force offline translation mode:
+
+```bash
+# Windows PowerShell
+$env:TRANSLATION_MODE="offline"
+.\start.bat
+```
+
+Automated option:
+
+```powershell
+.\start.bat -EnableOfflineLanguages
+```
+
+This automatically:
+- sets `TRANSLATION_MODE=offline`
+- installs only missing local language packs
+- stores a marker in `data/offline_packs_marker.json` to skip repeated installs
+
+Modes:
+- `offline`: only local Argos translation (no network translation fallback)
+- `hybrid` (default): local Argos first, then online fallback if local pack missing
+- `online`: use online translator only
 
 ---
 

@@ -7,7 +7,11 @@ param(
   [int]$LawsRefreshDays = 7,
   [int]$LawsMaxDocs = 200,
   [string]$TranslateLangs = "",
-  [int]$TranslateMaxRecords = 0
+  [int]$TranslateMaxRecords = 0,
+  [switch]$EnableOfflineLanguages,
+  [switch]$SkipOfflinePackInstall,
+  [switch]$ForceOfflinePackInstall,
+  [string]$OfflineLangs = "hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur"
 )
 
 $ErrorActionPreference = "Stop"
@@ -101,6 +105,67 @@ function Ensure-LawsDataset {
   }
 }
 
+function Ensure-OfflineLanguagePacks {
+  param(
+    [string]$PythonExe
+  )
+
+  if (-not $EnableOfflineLanguages) {
+    return
+  }
+
+  $env:TRANSLATION_MODE = "offline"
+  Write-Step "Offline language mode enabled (TRANSLATION_MODE=offline)"
+
+  if ($SkipOfflinePackInstall) {
+    Write-Step "Skipping offline language pack install (--SkipOfflinePackInstall)"
+    return
+  }
+
+  $installer = "install_offline_language_packs.py"
+  if (-not (Test-Path $installer)) {
+    Write-Host "Offline pack installer not found: $installer. Continuing without auto-install." -ForegroundColor Yellow
+    return
+  }
+
+  $markerDir = "data"
+  $markerPath = Join-Path $markerDir "offline_packs_marker.json"
+  if (-not (Test-Path $markerDir)) {
+    New-Item -ItemType Directory -Path $markerDir | Out-Null
+  }
+
+  $normalizedLangs = ($OfflineLangs -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ }) -join ","
+  $shouldInstall = $ForceOfflinePackInstall -or -not (Test-Path $markerPath)
+
+  if (-not $shouldInstall) {
+    try {
+      $marker = Get-Content -Raw -Path $markerPath | ConvertFrom-Json
+      if ($null -eq $marker -or $marker.langs -ne $normalizedLangs) {
+        $shouldInstall = $true
+      }
+    } catch {
+      $shouldInstall = $true
+    }
+  }
+
+  if (-not $shouldInstall) {
+    Write-Step "Offline language packs already provisioned for: $normalizedLangs"
+    return
+  }
+
+  Write-Step "Installing missing offline language packs ($normalizedLangs)"
+  & $PythonExe $installer --langs $normalizedLangs
+  if ($LASTEXITCODE -ne 0) {
+    throw "Offline language pack installation failed with exit code $LASTEXITCODE."
+  }
+
+  $payload = @{
+    langs = $normalizedLangs
+    updated_at = (Get-Date).ToString("o")
+  } | ConvertTo-Json
+  Set-Content -Path $markerPath -Value $payload -Encoding UTF8
+}
+
 New-VenvIfMissing
 $pythonExe = (Resolve-Path ".venv\Scripts\python.exe").Path
 
@@ -110,6 +175,7 @@ if (-not $NoInstall) {
   & $pythonExe -m pip install -r requirements.txt
 }
 
+Ensure-OfflineLanguagePacks -PythonExe $pythonExe
 Ensure-LawsDataset -PythonExe $pythonExe
 
 Write-Step "Starting API server on http://127.0.0.1:$Port"
