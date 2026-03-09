@@ -98,6 +98,58 @@ PENALTY_GUIDE = {
     "Indian Contract Act, 1872": [
         "Contract Act is primarily civil; remedies are usually damages/compensation/specific relief, not criminal punishment unless other laws apply.",
     ],
+    "Information Technology Act, 2000": [
+        "IT Act Section 66: imprisonment up to 3 years or fine up to Rs 5 lakh, or both (subject to updates/amendments).",
+        "IT Act Section 66C (identity theft): imprisonment up to 3 years and fine up to Rs 1 lakh.",
+        "IT Act Section 66D (cheating by personation online): imprisonment up to 3 years and fine up to Rs 1 lakh.",
+        "IT Act Section 67/67A: punishment and fine for publishing/transmitting obscene or sexually explicit material in electronic form.",
+    ],
+    "Companies Act, 2013": [
+        "Companies Act Section 447 (fraud): stringent punishment including imprisonment and fine, depending on gravity/value and public-interest impact.",
+        "Corporate compliance defaults under Companies Act can trigger penalties on company and officers in default under relevant sections.",
+    ],
+    "Limited Liability Partnership Act, 2008": [
+        "LLP compliance defaults (filings/records) can attract monetary penalties on LLP and designated partners under applicable provisions.",
+    ],
+    "Insolvency and Bankruptcy Code, 2016": [
+        "IBC is primarily a resolution/liquidation framework; non-compliance with process and fraudulent conduct can trigger penalties under IBC provisions.",
+    ],
+    "Foreign Exchange Management Act, 1999": [
+        "FEMA contraventions are generally civil and can attract monetary penalties, adjudication, and possible compounding as per RBI/ED framework.",
+    ],
+    "SEBI Act, 1992": [
+        "SEBI violations can attract monetary penalties, disgorgement, market bans/debarment, and prosecution for serious securities-law breaches.",
+    ],
+    "Competition Act, 2002": [
+        "Competition law contraventions (cartel/abuse) can attract substantial turnover-linked penalties and cease-and-desist directions.",
+    ],
+    "Copyright Act, 1957": [
+        "Copyright infringement can attract civil remedies and, in specified cases, criminal penalties including imprisonment and fine.",
+    ],
+    "Trade Marks Act, 1999": [
+        "Trademark infringement/passing off can lead to injunction, damages/accounts of profits, and in certain offences imprisonment/fine.",
+    ],
+    "Patents Act, 1970": [
+        "Patent disputes are primarily civil; typical remedies include injunction and damages/accounts of profits.",
+    ],
+    "Environment (Protection) Act, 1986": [
+        "Environmental violations can attract imprisonment and fine, with enhanced consequences for continuing offences.",
+    ],
+    "Water (Prevention and Control of Pollution) Act, 1974": [
+        "Water pollution non-compliance may attract prosecution, imprisonment and fines under applicable provisions.",
+    ],
+    "Air (Prevention and Control of Pollution) Act, 1981": [
+        "Air pollution non-compliance may attract prosecution, imprisonment and fines under applicable provisions.",
+    ],
+    "Income-tax Act, 1961": [
+        "Income-tax defaults can result in interest, monetary penalties, and prosecution for serious willful violations.",
+    ],
+    "Central Goods and Services Tax Act, 2017": [
+        "GST non-compliance can trigger tax demand, interest, penalties, and prosecution for specified serious offences.",
+    ],
+    "Hindu Marriage Act, 1955": [
+        "Family-law disputes are largely civil; courts typically grant declaratory, maintenance and matrimonial relief rather than criminal punishment.",
+    ],
 }
 
 
@@ -216,7 +268,7 @@ class LLMService:
         if not context:
             msg = (
                 "I could not find specific information for this legal question. "
-                "Please consult a lawyer or call NALSA helpline at 15100 for free legal aid.",
+                "Please consult a lawyer or call NALSA helpline at 15100 for free legal aid."
             )
             return self._translate_if_needed(msg, response_language), [], 0.3
 

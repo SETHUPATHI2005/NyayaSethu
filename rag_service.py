@@ -30,6 +30,26 @@ TOKEN_ALIASES = {
     "consumer": {"refund", "defective"},
     "domestic": {"violence", "women"},
     "rti": {"information"},
+    "cyber": {"cybercrime", "it", "online", "hacking", "phishing"},
+    "fraud": {"cheating", "scam", "66d", "it"},
+    "upi": {"payment", "banking", "fraud", "1930"},
+    "phishing": {"otp", "identity", "66c", "66d"},
+    "company": {"corporate", "companies", "director", "board", "roc"},
+    "corporate": {"company", "companies", "board", "compliance"},
+    "insolvency": {"ibc", "bankruptcy", "cirp", "nclt"},
+    "sebi": {"securities", "listing", "insider", "trading"},
+    "llp": {"limited", "liability", "partnership"},
+    "fema": {"foreign", "exchange", "rbi", "cross", "border"},
+    "competition": {"cartel", "dominant", "cci", "antitrust"},
+    "ip": {"intellectual", "property", "copyright", "trademark", "patent"},
+    "copyright": {"ip", "author", "infringement"},
+    "trademark": {"ip", "brand", "mark", "passing", "off"},
+    "patent": {"ip", "invention", "novelty"},
+    "environment": {"pollution", "epa", "air", "water", "ecology"},
+    "family": {"marriage", "divorce", "maintenance", "inheritance", "succession"},
+    "tax": {"income", "gst", "tds", "assessment", "penalty"},
+    "gst": {"tax", "cgst", "sgst", "igst", "return", "filing"},
+    "administrative": {"writ", "authority", "tribunal", "natural", "justice"},
     "bns": {"bharatiya", "nyaya", "sanhita", "ipc"},
     "bnss": {"bharatiya", "nagarik", "suraksha", "sanhita", "crpc"},
     "bsa": {"bharatiya", "sakshya", "adhiniyam", "evidence"},
@@ -46,6 +66,51 @@ TOPIC_HINTS = {
     "women": {"domestic", "violence", "posh", "harassment", "maternity"},
     "rti": {"rti", "information", "pio"},
     "property": {"rent", "tenant", "landlord", "eviction", "property"},
+    "cybercrime": {
+        "cyber",
+        "cybercrime",
+        "hacking",
+        "phishing",
+        "otp",
+        "upi",
+        "online",
+        "fraud",
+        "identity",
+        "theft",
+        "it",
+        "computer",
+        "malware",
+        "portal",
+        "1930",
+    },
+    "corporate": {
+        "company",
+        "companies",
+        "corporate",
+        "director",
+        "board",
+        "roc",
+        "llp",
+        "sebi",
+        "insider",
+        "securities",
+        "fema",
+        "foreign",
+        "exchange",
+        "ibc",
+        "insolvency",
+        "bankruptcy",
+        "nclt",
+        "competition",
+        "cartel",
+        "cci",
+        "compliance",
+    },
+    "ip": {"ip", "intellectual", "property", "copyright", "trademark", "patent", "infringement"},
+    "environment": {"environment", "pollution", "epa", "air", "water", "hazardous", "waste"},
+    "family": {"family", "marriage", "divorce", "maintenance", "alimony", "succession", "inheritance"},
+    "tax": {"tax", "income", "gst", "tds", "assessment", "refund", "demand", "penalty"},
+    "administrative": {"administrative", "authority", "tribunal", "writ", "natural", "justice", "delegated"},
 }
 
 # â”€â”€ Lazy imports so the app starts even without GPU deps â”€â”€
@@ -376,6 +441,144 @@ FALLBACK_CORPUS = [
         "source": "Indian Contract Act, 1872 - Sections 1 to 266",
         "topic": "civil",
         "acts": ["Indian Contract Act, 1872"]
+    },
+    {
+        "text": "Under the Information Technology Act, 2000, Section 43 deals with unauthorized access, downloading, introducing malware, and damaging computer systems, with civil liability by way of compensation. Section 66 criminalizes dishonest or fraudulent acts referred in Section 43 and can attract imprisonment and fine.",
+        "source": "Information Technology Act, 2000 - Sections 43 and 66",
+        "topic": "cybercrime",
+        "acts": ["Information Technology Act, 2000"]
+    },
+    {
+        "text": "Under the Information Technology Act, 2000, Section 66C addresses identity theft (for example misuse of password, digital signature, or unique identification features), and Section 66D addresses cheating by personation using computer resources, commonly used in phishing, OTP scams and fake online profile frauds.",
+        "source": "Information Technology Act, 2000 - Sections 66C and 66D",
+        "topic": "cybercrime",
+        "acts": ["Information Technology Act, 2000"]
+    },
+    {
+        "text": "For cyber fraud response in India, immediate reporting should be made to the National Cyber Crime Reporting Portal (cybercrime.gov.in) and helpline 1930, especially for financial frauds. Early reporting can help freezing suspicious transactions through coordinated banking and law-enforcement workflow.",
+        "source": "National Cyber Crime Reporting Workflow - cybercrime.gov.in / 1930",
+        "topic": "cybercrime",
+        "acts": ["Information Technology Act, 2000", "Bharatiya Nyaya Sanhita, 2023"]
+    },
+    {
+        "text": "Digital evidence preservation is critical in cybercrime cases: keep screenshots, transaction IDs, UPI references, chat logs, email headers, URLs, caller numbers, and device logs. Do not delete messages or reset devices before making a complaint and giving statements to police/cyber cell.",
+        "source": "Cybercrime Evidence Preservation - Practical Procedure",
+        "topic": "cybercrime",
+        "acts": ["Bharatiya Sakshya Adhiniyam, 2023", "Information Technology Act, 2000"]
+    },
+    {
+        "text": "Online obscenity and sexually explicit electronic content may attract provisions under Information Technology Act Section 67 and Section 67A, apart from applicable offences under Bharatiya Nyaya Sanhita, 2023 depending on facts. Child sexual abuse material and related conduct involve stricter legal consequences under special laws.",
+        "source": "Information Technology Act, 2000 - Sections 67 and 67A",
+        "topic": "cybercrime",
+        "acts": ["Information Technology Act, 2000", "Bharatiya Nyaya Sanhita, 2023"]
+    },
+    {
+        "text": "The Companies Act, 2013 governs incorporation, governance, board responsibilities, audit, disclosure and shareholder protection. Corporate non-compliance can attract penalties for the company and officers in default, and serious fraud can invoke stricter punishment under fraud provisions and related laws.",
+        "source": "Companies Act, 2013 - Corporate Governance and Compliance",
+        "topic": "corporate",
+        "acts": ["Companies Act, 2013"]
+    },
+    {
+        "text": "Companies Act, 2013 Section 447 addresses fraud involving company affairs and provides stringent punishment including imprisonment and fine, with higher consequences in public-interest or large-value fraud cases. Proceedings may involve SFIO, Registrar of Companies and criminal courts/NCLT context based on facts.",
+        "source": "Companies Act, 2013 - Section 447 (Fraud)",
+        "topic": "corporate",
+        "acts": ["Companies Act, 2013"]
+    },
+    {
+        "text": "The Limited Liability Partnership Act, 2008 regulates LLP formation, partner responsibilities, filings and compliance. LLP combines partnership flexibility with limited liability. Non-filing and statutory defaults can lead to penalties on LLP and designated partners.",
+        "source": "Limited Liability Partnership Act, 2008",
+        "topic": "corporate",
+        "acts": ["Limited Liability Partnership Act, 2008"]
+    },
+    {
+        "text": "The Insolvency and Bankruptcy Code, 2016 provides time-bound insolvency resolution and liquidation framework for corporate persons through CIRP before NCLT. Creditors may initiate insolvency for payment defaults, and management control can shift to insolvency professionals during resolution.",
+        "source": "Insolvency and Bankruptcy Code, 2016 - CIRP Framework",
+        "topic": "corporate",
+        "acts": ["Insolvency and Bankruptcy Code, 2016"]
+    },
+    {
+        "text": "FEMA, 1999 governs foreign exchange transactions, capital account/current account rules and cross-border remittances. Contraventions are generally civil in nature with monetary penalties, adjudication process, and possible compounding depending on RBI/ED framework and applicable regulations.",
+        "source": "Foreign Exchange Management Act, 1999 (FEMA)",
+        "topic": "corporate",
+        "acts": ["Foreign Exchange Management Act, 1999"]
+    },
+    {
+        "text": "SEBI Act, 1992 and SEBI regulations govern securities market conduct including disclosure, listing obligations and insider trading controls. Violations can attract monetary penalties, market-access restrictions, disgorgement directions and prosecution depending on breach severity.",
+        "source": "SEBI Act, 1992 and Securities Compliance Framework",
+        "topic": "corporate",
+        "acts": ["SEBI Act, 1992"]
+    },
+    {
+        "text": "Competition Act, 2002 prohibits anti-competitive agreements and abuse of dominant position, and regulates combinations (mergers/acquisitions). The Competition Commission of India may investigate and impose significant penalties including turnover-linked fines for cartels and other contraventions.",
+        "source": "Competition Act, 2002 - Anti-Competitive Conduct",
+        "topic": "corporate",
+        "acts": ["Competition Act, 2002"]
+    },
+    {
+        "text": "The Copyright Act, 1957 protects original literary, dramatic, musical, artistic works, cinematograph films and sound recordings. Unauthorized reproduction, distribution or communication to the public can amount to infringement and may attract civil remedies and criminal consequences under the Act.",
+        "source": "Copyright Act, 1957",
+        "topic": "ip",
+        "acts": ["Copyright Act, 1957"]
+    },
+    {
+        "text": "The Trade Marks Act, 1999 protects registered marks and provides remedies against infringement and passing off. Courts may grant injunctions, damages/accounts of profits, and seizure/destruction orders depending on facts and evidence of misuse.",
+        "source": "Trade Marks Act, 1999",
+        "topic": "ip",
+        "acts": ["Trade Marks Act, 1999"]
+    },
+    {
+        "text": "The Patents Act, 1970 governs patentability, filing, grant, opposition and infringement for inventions meeting novelty, inventive step and industrial applicability. Infringement generally leads to civil remedies such as injunction and damages or accounts of profits.",
+        "source": "Patents Act, 1970",
+        "topic": "ip",
+        "acts": ["Patents Act, 1970"]
+    },
+    {
+        "text": "The Environment (Protection) Act, 1986 provides umbrella powers to protect and improve environment, regulate emissions/discharges and prescribe safeguards for hazardous substances. Violations can attract imprisonment and fine under the Act, including continuing offence consequences.",
+        "source": "Environment (Protection) Act, 1986",
+        "topic": "environment",
+        "acts": ["Environment (Protection) Act, 1986"]
+    },
+    {
+        "text": "The Water (Prevention and Control of Pollution) Act, 1974 and Air (Prevention and Control of Pollution) Act, 1981 regulate consent requirements, pollution control standards and enforcement through pollution control boards. Non-compliance may attract prosecution, imprisonment and fine.",
+        "source": "Water Act, 1974 and Air Act, 1981",
+        "topic": "environment",
+        "acts": ["Water (Prevention and Control of Pollution) Act, 1974", "Air (Prevention and Control of Pollution) Act, 1981"]
+    },
+    {
+        "text": "Family law in India is religion/community specific in many areas and includes marriage, divorce, maintenance, guardianship and succession. Key statutes include Hindu Marriage Act, 1955, Hindu Succession Act, 1956, Special Marriage Act, 1954 and Muslim personal law principles, alongside maintenance remedies under criminal/civil framework.",
+        "source": "Indian Personal and Family Law Framework",
+        "topic": "family",
+        "acts": ["Hindu Marriage Act, 1955", "Special Marriage Act, 1954", "Hindu Succession Act, 1956"]
+    },
+    {
+        "text": "Under the Hindu Marriage Act, 1955, parties may seek judicial remedies including divorce on statutory grounds and related reliefs. Maintenance rights may also arise through Section 24 and Section 25 (interim/permanent alimony) and through parallel remedies under other laws where applicable.",
+        "source": "Hindu Marriage Act, 1955",
+        "topic": "family",
+        "acts": ["Hindu Marriage Act, 1955"]
+    },
+    {
+        "text": "Income-tax Act, 1961 governs taxable income, deductions, assessment, return filing and penalties for non-compliance. Depending on default type, consequences can include interest, monetary penalties and prosecution in serious cases such as willful evasion or false verification.",
+        "source": "Income-tax Act, 1961",
+        "topic": "tax",
+        "acts": ["Income-tax Act, 1961"]
+    },
+    {
+        "text": "GST law in India is administered primarily through the Central Goods and Services Tax Act, 2017 and related GST statutes/rules. Non-filing of GST returns and other non-compliance may lead to tax demand, interest, penalties, cancellation of registration and prosecution for specified offences.",
+        "source": "CGST Act, 2017 - GST Compliance Framework",
+        "topic": "tax",
+        "acts": ["Central Goods and Services Tax Act, 2017"]
+    },
+    {
+        "text": "Administrative law in India controls exercise of public power through constitutional principles, statutory limits and judicial review. Key doctrines include natural justice, reasonableness, proportionality and non-arbitrariness, with remedies through writ jurisdiction under Articles 32 and 226.",
+        "source": "Indian Administrative Law - Judicial Review and Natural Justice",
+        "topic": "administrative",
+        "acts": ["Constitution of India"]
+    },
+    {
+        "text": "Indian legal system follows a common-law tradition where judicial precedents of constitutional courts play a binding/persuasive role alongside statutes. Statutory law enacted by Parliament/State legislatures co-exists with case-law principles that interpret and apply statutes.",
+        "source": "Common Law Tradition in India - Precedent and Statutory Interpretation",
+        "topic": "administrative",
+        "acts": ["Constitution of India"]
     },
 ]
 
