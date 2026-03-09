@@ -180,9 +180,13 @@ USER QUESTION: {question} [/INST]"""
     def _extract_laws(self, text: str) -> List[str]:
         patterns = [
             r"(?:Section \d+[A-Z]? of )?(?:the )?[A-Z][A-Za-z\s]+ Act,? \d{4}",
+            r"(?:Section \d+[A-Z]? of )?(?:the )?Bharatiya [A-Za-z\s]+,? \d{4}",
             r"Article \d+ of the (?:Indian )?Constitution",
             r"IPC Section \d+",
             r"CrPC Section \d+",
+            r"BNS Section \d+[A-Z]?",
+            r"BNSS Section \d+[A-Z]?",
+            r"BSA Section \d+[A-Z]?",
         ]
         found = set()
         for pattern in patterns:
