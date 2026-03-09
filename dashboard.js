@@ -1,6 +1,6 @@
 function readUser() {
   try {
-    return JSON.parse(localStorage.getItem('nyayasethu_user') || 'null');
+    return JSON.parse(localStorage.getItem('nyayamithra_user') || 'null');
   } catch {
     return null;
   }
@@ -19,7 +19,7 @@ if (user) {
 }
 
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
-  localStorage.removeItem('nyayasethu_user');
+  localStorage.removeItem('nyayamithra_user');
   window.location.href = 'login.html';
 });
 

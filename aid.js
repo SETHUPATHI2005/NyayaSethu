@@ -1,4 +1,4 @@
-const API = window.NYAYASETHU_API || '';
+const API = window.NYAYAMITHRA_API || '';
 
 document.querySelector('.nav')?.classList.add('solid');
 

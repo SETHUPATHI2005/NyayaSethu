@@ -1,4 +1,4 @@
-# ⚖️ NyayaSethu — AI Legal Guidance for India
+# ⚖️ NyayaMithra — AI Legal Guidance for India
 
 AI-powered legal assistance for every Indian citizen. Free, multilingual, always available.
 
@@ -87,7 +87,7 @@ fly auth login
 fly launch --no-deploy
 
 # Set Netlify frontend origin for CORS
-fly secrets set ALLOWED_ORIGINS=https://nyayasethu.netlify.app
+fly secrets set ALLOWED_ORIGINS=https://nyayamithra.netlify.app
 
 # Deploy
 fly deploy
@@ -95,7 +95,7 @@ fly deploy
 
 After deploy, update frontend backend URL once:
 
-`https://nyayasethu.netlify.app/?api=https://<your-fly-app>.fly.dev`
+`https://nyayamithra.netlify.app/?api=https://<your-fly-app>.fly.dev`
 
 ### 1. Frontend (no build needed)
 
@@ -214,7 +214,7 @@ After files are generated, restart backend and it will auto-load these JSON file
 
 ### Offline Language Mode
 
-NyayaSethu now supports offline-first translation for chat responses using Argos Translate.
+NyayaMithra now supports offline-first translation for chat responses using Argos Translate.
 
 1. Install dependencies:
 
@@ -291,5 +291,5 @@ gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 
 ## ⚠️ Legal Disclaimer
 
-NyayaSethu provides **legal information**, not legal advice. For complex legal matters, consult a qualified advocate. Contact **NALSA** (National Legal Services Authority) at **15100** for free professional legal aid.
+NyayaMithra provides **legal information**, not legal advice. For complex legal matters, consult a qualified advocate. Contact **NALSA** (National Legal Services Authority) at **15100** for free professional legal aid.
 

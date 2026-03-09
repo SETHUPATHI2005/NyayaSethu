@@ -1,4 +1,4 @@
-const API = window.NYAYASETHU_API || '';
+const API = window.NYAYAMITHRA_API || '';
 
 function setMsg(text, ok = false) {
   const el = document.getElementById('authMsg');
@@ -26,7 +26,7 @@ if (loginForm) {
         setMsg(data.message || 'Login failed.');
         return;
       }
-      localStorage.setItem('nyayasethu_user', JSON.stringify(data.user));
+      localStorage.setItem('nyayamithra_user', JSON.stringify(data.user));
       setMsg('Login successful. Redirecting...', true);
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
     } catch {
@@ -55,7 +55,7 @@ if (registerForm) {
         setMsg(data.message || 'Registration failed.');
         return;
       }
-      localStorage.setItem('nyayasethu_user', JSON.stringify(data.user));
+      localStorage.setItem('nyayamithra_user', JSON.stringify(data.user));
       setMsg('Registration successful. Redirecting...', true);
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
     } catch {

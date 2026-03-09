@@ -1,4 +1,4 @@
-app = "nyayasethu-api"
+app = "nyayamithra-api"
 primary_region = "bom"
 
 [build]

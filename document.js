@@ -1,4 +1,4 @@
-const API = window.NYAYASETHU_API || '';
+const API = window.NYAYAMITHRA_API || '';
 
 const TEMPLATES = {
   wrongful_termination: {
@@ -310,7 +310,7 @@ document.getElementById('printDocBtn')?.addEventListener('click', () => {
   const doc = document.querySelector('.preview-document');
   if (!doc) return;
   const w = window.open('', '_blank');
-  w.document.write(`<html><head><title>NyayaSethu Document</title><style>body{font-family:monospace;padding:48px;line-height:2;font-size:13px;white-space:pre-wrap}</style></head><body>${doc.textContent}</body></html>`);
+  w.document.write(`<html><head><title>NyayaMithra Document</title><style>body{font-family:monospace;padding:48px;line-height:2;font-size:13px;white-space:pre-wrap}</style></head><body>${doc.textContent}</body></html>`);
   w.document.close(); w.focus(); w.print();
 });
 

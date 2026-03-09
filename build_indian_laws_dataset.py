@@ -32,7 +32,7 @@ SEED_URLS = [
     "https://www.legislative.gov.in/",
 ]
 
-USER_AGENT = "NyayaSethu-LawDatasetBuilder/1.0 (+research use)"
+USER_AGENT = "NyayaMithra-LawDatasetBuilder/1.0 (+research use)"
 
 LANGUAGE_MAP = {
     "hi": "Hindi",
@@ -322,7 +322,7 @@ def translate_records(
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Build Indian laws dataset for NyayaSethu RAG.")
+    p = argparse.ArgumentParser(description="Build Indian laws dataset for NyayaMithra RAG.")
     p.add_argument("--max-docs", type=int, default=150, help="Maximum documents to download.")
     p.add_argument("--chunk-chars", type=int, default=2200, help="Chunk size in characters.")
     p.add_argument("--overlap-chars", type=int, default=250, help="Chunk overlap in characters.")

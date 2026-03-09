@@ -1,4 +1,4 @@
-"""NyayaSethu FastAPI app with auth, chat, document generation, and legal aid search."""
+"""NyayaMithra FastAPI app with auth, chat, document generation, and legal aid search."""
 from datetime import datetime
 import hashlib
 import json
@@ -19,7 +19,7 @@ from rag_service import RAGService
 
 
 app = FastAPI(
-    title="NyayaSethu API",
+    title="NyayaMithra API",
     description="AI-powered legal guidance API for India",
     version="1.0.0",
     docs_url="/api/docs",
@@ -189,6 +189,27 @@ def _build_suggested_actions(answer: str) -> List[Dict[str, str]]:
                 "type": "document",
                 "label": "Generate consumer complaint",
                 "template": "consumer_complaint",
+            }
+        )
+    if any(
+        k in a
+        for k in [
+            "cyber",
+            "online fraud",
+            "upi fraud",
+            "phishing",
+            "otp",
+            "identity theft",
+            "hacking",
+            "cybercrime",
+            "it act",
+        ]
+    ):
+        actions.append(
+            {
+                "type": "document",
+                "label": "Generate cybercrime complaint",
+                "template": "online_fraud",
             }
         )
     actions.append({"type": "aid", "label": "Find legal aid near you", "template": ""})

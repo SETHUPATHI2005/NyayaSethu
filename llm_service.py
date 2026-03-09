@@ -17,7 +17,7 @@ HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL_ID}"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 TRANSLATION_MODE = os.getenv("TRANSLATION_MODE", "hybrid").strip().lower()
 
-SYSTEM_PROMPT = """You are NyayaSethu, an AI legal assistant specialising in Indian law.
+SYSTEM_PROMPT = """You are NyayaMithra, an AI legal assistant specialising in Indian law.
 Your role is to help ordinary citizens understand their legal rights and options.
 
 Guidelines:

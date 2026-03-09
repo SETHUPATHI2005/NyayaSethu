@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   NYAYASETHU · Chat Page CSS
+   NYAYAMITHRA · Chat Page CSS
    Full-height terminal-style chat with fire accents
 ═══════════════════════════════════════════════════════════════ */
 
@@ -143,6 +143,7 @@ body.chat-page { display: flex; }
   border-bottom: 1px solid var(--border); flex-shrink: 0;
   position: relative; z-index: 10;
 }
+
 .topbar-menu {
   font-size: 19px; color: var(--muted); padding: 6px 8px;
   border-radius: var(--r-sm); display: none; transition: all 0.2s;
