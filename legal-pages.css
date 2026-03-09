@@ -40,6 +40,11 @@
   font-size: 14px;
 }
 
+.legal-card p strong {
+  font-weight: 700;
+  color: var(--cream);
+}
+
 .legal-card ul {
   padding-left: 20px;
 }
