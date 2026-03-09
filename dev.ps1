@@ -1,7 +1,13 @@
 param(
   [int]$Port = 8000,
   [switch]$NoInstall,
-  [switch]$Reload
+  [switch]$Reload,
+  [switch]$SkipLawsBuild,
+  [switch]$ForceLawsRefresh,
+  [int]$LawsRefreshDays = 7,
+  [int]$LawsMaxDocs = 200,
+  [string]$TranslateLangs = "",
+  [int]$TranslateMaxRecords = 0
 )
 
 $ErrorActionPreference = "Stop"
@@ -42,6 +48,59 @@ function New-VenvIfMissing {
   & python -m venv .venv
 }
 
+function Ensure-LawsDataset {
+  param(
+    [string]$PythonExe
+  )
+
+  if ($SkipLawsBuild) {
+    Write-Step "Skipping laws dataset build (--SkipLawsBuild)"
+    return
+  }
+
+  $builder = "build_indian_laws_dataset.py"
+  if (-not (Test-Path $builder)) {
+    Write-Host "Dataset builder not found: $builder. Continuing startup without auto-build." -ForegroundColor Yellow
+    return
+  }
+
+  $dataDir = "data"
+  $datasetPath = Join-Path $dataDir "indian_laws_en.json"
+  $shouldBuild = $ForceLawsRefresh -or -not (Test-Path $datasetPath)
+
+  if (-not $shouldBuild) {
+    $lastWrite = (Get-Item $datasetPath).LastWriteTime
+    $staleCutoff = (Get-Date).AddDays(-1 * $LawsRefreshDays)
+    if ($lastWrite -lt $staleCutoff) {
+      $shouldBuild = $true
+    }
+  }
+
+  if (-not $shouldBuild) {
+    Write-Step "Laws dataset is up to date: $datasetPath"
+    return
+  }
+
+  Write-Step "Building laws dataset from government portals"
+  $args = @(
+    $builder,
+    "--max-docs", "$LawsMaxDocs"
+  )
+
+  if ($TranslateLangs -and $TranslateLangs.Trim().Length -gt 0) {
+    $args += @("--translate-langs", $TranslateLangs.Trim())
+  }
+
+  if ($TranslateMaxRecords -gt 0) {
+    $args += @("--translate-max-records", "$TranslateMaxRecords")
+  }
+
+  & $PythonExe @args
+  if ($LASTEXITCODE -ne 0) {
+    throw "Laws dataset build failed with exit code $LASTEXITCODE."
+  }
+}
+
 New-VenvIfMissing
 $pythonExe = (Resolve-Path ".venv\Scripts\python.exe").Path
 
@@ -50,6 +109,8 @@ if (-not $NoInstall) {
   & $pythonExe -m pip install --upgrade pip
   & $pythonExe -m pip install -r requirements.txt
 }
+
+Ensure-LawsDataset -PythonExe $pythonExe
 
 Write-Step "Starting API server on http://127.0.0.1:$Port"
 if ($Reload) {

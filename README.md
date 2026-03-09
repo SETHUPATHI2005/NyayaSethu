@@ -60,6 +60,7 @@ legalai/
 This will automatically:
 - create `.venv` if missing
 - install/update dependencies from `requirements.txt`
+- auto-build/refresh `data/indian_laws_en.json` from government portals when missing or stale
 - start the app on `http://127.0.0.1:8000`
 
 Optional flags:
@@ -68,6 +69,9 @@ Optional flags:
 .\start.bat -NoInstall
 .\start.bat -Reload
 .\start.bat -Port 9000
+.\start.bat -ForceLawsRefresh
+.\start.bat -SkipLawsBuild
+.\start.bat -TranslateLangs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur -TranslateMaxRecords 500
 ```
 
 ### Deploy Backend on Fly.io
@@ -159,6 +163,42 @@ Add legal knowledge JSON files to `backend/data/`:
 ```
 
 The RAG service auto-loads all `.json` files from `data/` on startup and builds a FAISS index.
+
+---
+
+## 📚 Build Full Indian Laws Dataset
+
+To ingest laws from:
+- `https://www.mha.gov.in/en/acts`
+- `https://www.legislative.gov.in/`
+
+Run:
+
+```bash
+python build_indian_laws_dataset.py --max-docs 200
+```
+
+This writes:
+- `data/indian_laws_en.json` (English corpus)
+
+Optional multilingual export (uses OpenAI translation API):
+
+```bash
+# Set key first
+export OPENAI_API_KEY=your_key_here     # Windows PowerShell: $env:OPENAI_API_KEY="your_key_here"
+
+python build_indian_laws_dataset.py \
+  --max-docs 200 \
+  --translate-langs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur \
+  --translate-max-records 500
+```
+
+Additional controls:
+- `--chunk-chars 2200` and `--overlap-chars 250` tune chunking for RAG.
+- `--sleep 0.25` adds polite delay between downloads.
+- `--translate-max-records` helps control translation cost.
+
+After files are generated, restart backend and it will auto-load these JSON files from `data/`.
 
 ---
 
