@@ -1,4 +1,42 @@
-const API = window.NYAYAMITHRA_API || "";
+const API_CONFIG_KEY = "nyayamithra_api_url";
+
+function apiBase() {
+  return String(window.NYAYAMITHRA_API || "").replace(/\/+$/, "");
+}
+
+function localFallbackApi() {
+  const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname) || window.location.protocol === "file:";
+  return isLocal ? "http://127.0.0.1:8000" : "";
+}
+
+function fallbackApi() {
+  return String(window.NYAYAMITHRA_DEFAULT_API || localFallbackApi() || "").replace(/\/+$/, "");
+}
+
+function persistApiBase(url) {
+  if (typeof window.setNyayaMithraApi === "function") {
+    window.setNyayaMithraApi(url);
+    return;
+  }
+  if (!url) {
+    localStorage.removeItem(API_CONFIG_KEY);
+  } else {
+    localStorage.setItem(API_CONFIG_KEY, url);
+  }
+  window.NYAYAMITHRA_API = url;
+}
+
+async function fetchApi(path, init) {
+  const primary = apiBase();
+  try {
+    return await fetch(`${primary}${path}`, init);
+  } catch (err) {
+    const fallback = fallbackApi();
+    if (!fallback || fallback === primary) throw err;
+    persistApiBase(fallback);
+    return await fetch(`${fallback}${path}`, init);
+  }
+}
 let isWaiting = false;
 
 const sidebar = document.getElementById("sidebar");
@@ -283,7 +321,7 @@ async function sendMessage(text, displayText = text) {
   scrollBottom();
 
   try {
-    const res = await fetch(`${API}/api/chat`, {
+    const res = await fetchApi("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
