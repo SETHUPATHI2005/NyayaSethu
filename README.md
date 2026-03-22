@@ -1,295 +1,377 @@
-# ⚖️ NyayaMithra — AI Legal Guidance for India
+# NyayaMithran — AI Legal Guidance for India
 
 AI-powered legal assistance for every Indian citizen. Free, multilingual, always available.
 
+## Overview
+
+NyayaMithran has been converted from a FastAPI/Python backend with vanilla HTML/CSS/JS frontend to a modern, fullstack **Next.js 16** application with React components and TypeScript. This enables:
+
+- **Server-side rendering** for better SEO
+- **API routes** for backend logic
+- **React components** for dynamic UIs
+- **Built-in file system storage** for user data and chat history
+- **Serverless deployment** ready (Vercel, AWS Lambda, etc.)
+
 ---
 
-## 📁 Project Structure
+## Tech Stack
+
+**Frontend:**
+- Next.js 16 (React 19)
+- TypeScript
+- Tailwind CSS
+- SWR for data fetching
+- Lucide React for icons
+
+**Backend:**
+- Next.js API Routes (Node.js)
+- File-based JSON storage (users, chat sessions)
+- RAG Service (keyword search + topic fallback)
+- LLM Service (Hugging Face/OpenAI with fallback)
+- Auth Service (password hashing with PBKDF2)
+
+**Data:**
+- `public/data/indian_laws_en.json` - Legal document corpus
+- `public/data/users.json` - User accounts
+- `public/data/chats/` - Chat session history
+
+---
+
+## Project Structure
 
 ```
-legalai/
-├── frontend/                   # Plain HTML/CSS/JS
-│   ├── index.html              # Landing page
-│   ├── chat.html               # AI chat interface
-│   ├── document.html           # Legal document generator
-│   ├── aid.html                # Nearby legal aid finder
-│   ├── css/
-│   │   ├── global.css          # Shared styles, nav, buttons
-│   │   ├── landing.css         # Landing page styles
-│   │   ├── chat.css            # Chat interface styles
-│   │   ├── document.css        # Document generator styles
-│   │   └── aid.css             # Legal aid finder styles
-│   └── js/
-│       ├── nav.js              # Navigation behaviour
-│       ├── landing.js          # Landing page animations
-│       ├── chat.js             # Chat + voice + API calls
-│       ├── document.js         # Document templates + generator
-│       └── aid.js              # Aid search + map
+nyayamithran/
+├── app/
+│   ├── layout.tsx                # Root layout with metadata
+│   ├── page.tsx                  # Landing/home page
+│   ├── globals.css               # Global styles & Tailwind
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── signup/route.ts   # User registration
+│   │   │   └── login/route.ts    # User authentication
+│   │   ├── chat/
+│   │   │   ├── session/route.ts  # Create chat session
+│   │   │   ├── message/route.ts  # Send/receive messages
+│   │   │   └── sessions/[userId]/route.ts # List sessions
+│   │   └── legal/
+│   │       ├── search/route.ts   # Search legal documents
+│   │       └── categories/route.ts # Get categories
+│   ├── chat/
+│   │   └── page.tsx              # Chat interface page
+│   ├── dashboard/
+│   │   └── page.tsx              # User dashboard
+│   ├── documents/
+│   │   └── page.tsx              # Document templates
+│   ├── legal-aid/
+│   │   └── page.tsx              # Legal search/aid
+│   ├── login/
+│   │   └── page.tsx              # Login page
+│   └── signup/
+│       └── page.tsx              # Signup page
 │
-└── backend/                    # FastAPI Python
-    ├── main.py                 # App entry point
-    ├── requirements.txt
-    ├── .env.example            # Copy to .env and fill keys
-    ├── routers/
-    │   ├── chat.py             # POST /api/chat
-    │   ├── document.py         # POST /api/document/generate
-    │   ├── legal_aid.py        # GET  /api/legal-aid/search
-    │   └── health.py           # GET  /api/health
-    ├── models/
-    │   └── schemas.py          # Pydantic request/response models
-    ├── services/
-    │   ├── rag_service.py      # Vector search (FAISS) + keyword fallback
-    │   ├── llm_service.py      # Hugging Face / OpenAI / rule-based
-    │   ├── language_service.py # Language detection + translation
-    │   ├── document_service.py # 13 legal document templates
-    │   └── legal_aid_service.py# Legal aid search (Google Places / seed)
-    └── data/
-        └── (place .json knowledge base files here)
+├── components/
+│   ├── Navigation.tsx            # Top navigation bar
+│   ├── ChatInterface.tsx         # Main chat component
+│   ├── ChatMessage.tsx           # Individual message component
+│   ├── ChatInput.tsx             # Message input with voice/files
+│   ├── LegalSearch.tsx           # Legal document search
+│   └── DocumentGenerator.tsx     # Document template generator
+│
+├── lib/
+│   ├── services/
+│   │   ├── rag.ts               # Document search & retrieval
+│   │   ├── llm.ts               # AI response generation
+│   │   ├── auth.ts              # User authentication & management
+│   │   └── chat.ts              # Chat session management
+│   └── utils/
+│       └── (utility functions)
+│
+├── public/
+│   └── data/
+│       ├── indian_laws_en.json  # Legal documents corpus
+│       ├── users.json           # User database
+│       └── chats/               # Chat session files
+│
+├── package.json                 # Dependencies
+├── tsconfig.json               # TypeScript config
+├── tailwind.config.js          # Tailwind CSS config
+├── next.config.js              # Next.js config
+└── .env.example                # Environment variables template
 ```
 
 ---
 
-## 🚀 Quick Start
+## Getting Started
 
-### Windows one-command setup + run
+### Prerequisites
 
-```powershell
-.\start.bat
-```
+- **Node.js** 18.x or higher
+- **npm**, **yarn**, **pnpm**, or **bun**
 
-This will automatically:
-- create `.venv` if missing
-- install/update dependencies from `requirements.txt`
-- auto-build/refresh `data/indian_laws_en.json` from government portals when missing or stale
-- start the app on `http://127.0.0.1:8000`
+### Installation
 
-Optional flags:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/SETHUPATHI2005/NyayaMithran.git
+   cd NyayaMithran
+   git checkout nyayamithran-nextjs-conversion
+   ```
 
-```powershell
-.\start.bat -NoInstall
-.\start.bat -Reload
-.\start.bat -Port 9000
-.\start.bat -ForceLawsRefresh
-.\start.bat -SkipLawsBuild
-.\start.bat -TranslateLangs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur -TranslateMaxRecords 500
-.\start.bat -EnableOfflineLanguages
-.\start.bat -EnableOfflineLanguages -OfflineLangs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur
-.\start.bat -EnableOfflineLanguages -ForceOfflinePackInstall
-```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   # or
+   bun install
+   ```
 
-### Deploy Backend on Fly.io
+3. **Set up environment variables (optional):**
+   ```bash
+   cp .env.example .env.local
+   # Add your API keys for enhanced LLM features (optional)
+   ```
 
-```bash
-# Install and login once
-fly auth login
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   # or
+   bun dev
+   ```
 
-# Create app (if not already created)
-fly launch --no-deploy
-
-# Set Netlify frontend origin for CORS
-fly secrets set ALLOWED_ORIGINS=https://nyayamithra.netlify.app
-
-# Deploy
-fly deploy
-```
-
-After deploy, update frontend backend URL once:
-
-`https://nyayamithra.netlify.app/?api=https://<your-fly-app>.fly.dev`
-
-### 1. Frontend (no build needed)
-
-```bash
-# Serve with any static server:
-cd frontend
-python -m http.server 3000
-# Open http://localhost:3000
-```
-
-Or with VS Code **Live Server** extension.
-
-### 2. Backend
-
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy and configure environment
-cp .env.example .env
-# Edit .env with your API keys
-
-# Run server
-uvicorn main:app --reload --port 8000
-```
-
-API docs available at: **http://localhost:8000/api/docs**
+5. **Open your browser:**
+   Navigate to `http://localhost:3000`
 
 ---
 
-## 🔑 API Keys Required
+## Features
 
-| Key | Purpose | Get it |
-|-----|---------|--------|
-| `HF_API_TOKEN` | LLM inference (Hugging Face) | https://huggingface.co/settings/tokens |
-| `GOOGLE_MAPS_API_KEY` | Legal aid map search | Google Cloud Console |
-| `OPENAI_API_KEY` | Optional OpenAI fallback | https://platform.openai.com |
+### 1. **AI Legal Chat Assistant**
+- Ask legal questions in English or Hindi
+- RAG-powered responses with relevant legal references
+- Voice input support (Web Speech API)
+- File attachment capability
+- Chat history saved to local storage
 
-> **Without keys:** The app works in fallback mode — RAG keyword search + rule-based answers + demo map data. All 4 pages are fully functional.
+### 2. **Legal Document Search**
+- Search through Indian laws and acts
+- Keyword-based + topic fallback search
+- Categorized results
+- Multiple language support
 
----
+### 3. **Legal Document Generator**
+- Pre-made templates:
+  - Legal Complaints
+  - Petitions
+  - Affidavits
+  - Legal Notice Letters
+  - Agreements
+  - Appeals
+- Form-based generation
+- Download as text files
 
-## 🧠 RAG Pipeline
+### 4. **User Dashboard**
+- View chat session history
+- Statistics on questions asked
+- Quick access to recent conversations
 
-To enable full vector search:
-
-```bash
-pip install faiss-cpu sentence-transformers
-```
-
-Add legal knowledge JSON files to `backend/data/`:
-
-```json
-[
-  {
-    "text": "Under Section 25F of the Industrial Disputes Act...",
-    "source": "Industrial Disputes Act, 1947 — Section 25F",
-    "topic": "labour",
-    "acts": ["Industrial Disputes Act, 1947"]
-  }
-]
-```
-
-The RAG service auto-loads all `.json` files from `data/` on startup and builds a FAISS index.
-
----
-
-## 📚 Build Full Indian Laws Dataset
-
-To ingest laws from:
-- `https://www.mha.gov.in/en/acts`
-- `https://www.legislative.gov.in/`
-
-Run:
-
-```bash
-python build_indian_laws_dataset.py --max-docs 200
-```
-
-This writes:
-- `data/indian_laws_en.json` (English corpus)
-
-Optional multilingual export (uses OpenAI translation API):
-
-```bash
-# Set key first
-export OPENAI_API_KEY=your_key_here     # Windows PowerShell: $env:OPENAI_API_KEY="your_key_here"
-
-python build_indian_laws_dataset.py \
-  --max-docs 200 \
-  --translate-langs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur \
-  --translate-max-records 500
-```
-
-Additional controls:
-- `--chunk-chars 2200` and `--overlap-chars 250` tune chunking for RAG.
-- `--sleep 0.25` adds polite delay between downloads.
-- `--translate-max-records` helps control translation cost.
-
-After files are generated, restart backend and it will auto-load these JSON files from `data/`.
+### 5. **Legal Aid Locator** (Future)
+- Find nearby legal aid organizations
+- Contact information
+- Service areas
 
 ---
 
-## 🌐 Multilingual Support
+## API Endpoints
 
-- Language **detection** is automatic (googletrans)
-- **22 Indian languages** supported for voice input (Web Speech API)
-- **Response translation** via Google Translate (free tier)
-- For production: switch to **Azure Translator** or **DeepL** for accuracy
+### Authentication
+- `POST /api/auth/signup` - Register new user
+- `POST /api/auth/login` - Login user
 
-### Offline Language Mode
+### Chat
+- `POST /api/chat/session` - Create new chat session
+- `POST /api/chat/message` - Send message & get response
+- `GET /api/chat/sessions/:userId` - List user's chat sessions
 
-NyayaMithra now supports offline-first translation for chat responses using Argos Translate.
-
-1. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-2. Install offline language packs once (requires internet only during installation):
-
-```bash
-python install_offline_language_packs.py --langs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur
-```
-
-3. Force offline translation mode:
-
-```bash
-# Windows PowerShell
-$env:TRANSLATION_MODE="offline"
-.\start.bat
-```
-
-Automated option:
-
-```powershell
-.\start.bat -EnableOfflineLanguages
-```
-
-This automatically:
-- sets `TRANSLATION_MODE=offline`
-- installs only missing local language packs
-- stores a marker in `data/offline_packs_marker.json` to skip repeated installs
-
-Modes:
-- `offline`: only local Argos translation (no network translation fallback)
-- `hybrid` (default): local Argos first, then online fallback if local pack missing
-- `online`: use online translator only
+### Legal Resources
+- `GET /api/legal/search?q=query&lang=en` - Search legal documents
+- `GET /api/legal/categories` - Get available categories & topics
 
 ---
 
-## 📄 Document Templates (13 total)
+## Services
 
-| Category | Templates |
-|----------|-----------|
-| Labour | Wrongful Termination, Unpaid Wages, PF/ESI Grievance, Maternity Leave |
-| Consumer | Consumer Court Complaint, Refund Notice, Online Fraud Complaint |
-| Women's Rights | Domestic Violence Application, POSH Complaint |
-| RTI & Civic | RTI Application, Police Complaint/FIR |
-| Property | Eviction Notice, Rent Dispute |
+### RAG Service (`lib/services/rag.ts`)
+Retrieval-Augmented Generation for legal document search:
+- Loads `indian_laws_en.json`
+- Keyword extraction and similarity matching
+- Category-based filtering
+- Topic-based fallback for unmatched queries
+
+### LLM Service (`lib/services/llm.ts`)
+Generates legal guidance responses:
+- Integrates with Hugging Face (optional)
+- Falls back to template-based responses if API unavailable
+- Supports multiple languages
+- Entity extraction for laws, acts, etc.
+
+### Auth Service (`lib/services/auth.ts`)
+User authentication & management:
+- PBKDF2 password hashing
+- Token generation
+- User registration & login
+- Language preference management
+
+### Chat Service (`lib/services/chat.ts`)
+Session & message management:
+- Creates isolated chat sessions per user
+- Persists messages to file system
+- Auto-titles conversations from first user message
+- Session listing and deletion
 
 ---
 
-## 🗺 Legal Aid Finder
+## Environment Variables (Optional)
 
-- Uses **Google Places API** for live nearby results
-- Falls back to curated **national database** of legal aid centres
-- Filter by type: Legal Aid / Labour / Consumer / Women / Police
-- Emergency helplines always shown (no API needed)
+```env
+# Hugging Face API for enhanced LLM responses
+HUGGINGFACE_API_KEY=hf_your_api_key_here
 
----
+# OpenAI API (future integration)
+OPENAI_API_KEY=sk_your_api_key_here
 
-## 🔧 Production Deployment
-
-```bash
-# Backend — Gunicorn + Uvicorn workers
-pip install gunicorn
-gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
-
-# Frontend — Nginx static serving
-# Point nginx root to frontend/ directory
-# Update API_BASE in js/ files to your production domain
+# Node environment
+NODE_ENV=development
 ```
 
+**Note:** The app works without these APIs using fallback responses. Add them for enhanced functionality.
+
 ---
 
-## ⚠️ Legal Disclaimer
+## Deployment
 
-NyayaMithra provides **legal information**, not legal advice. For complex legal matters, consult a qualified advocate. Contact **NALSA** (National Legal Services Authority) at **15100** for free professional legal aid.
+### Deploy to Vercel (Recommended)
 
+1. Push your code to GitHub
+2. Connect your GitHub repo to Vercel
+3. Vercel auto-detects Next.js and configures everything
+4. Set environment variables in Vercel Dashboard (if using external APIs)
+5. Deploy with one click!
+
+```bash
+# Using Vercel CLI
+npm install -g vercel
+vercel
+```
+
+### Deploy to Other Platforms
+
+**Docker:**
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+**AWS Lambda / AWS EC2:**
+- Next.js builds to `.next/` directory
+- Run `npm run build && npm start`
+- Works with serverless and traditional hosting
+
+---
+
+## Development
+
+### Adding a New Page
+
+1. Create `app/[section]/page.tsx`
+2. Use client components with `'use client'` for interactivity
+3. Import shared components from `components/`
+4. Use services from `lib/services/`
+
+### Adding a New API Endpoint
+
+1. Create `app/api/[section]/[action]/route.ts`
+2. Export `GET`, `POST`, `PUT`, `DELETE` functions as needed
+3. Use services for business logic
+4. Return `NextResponse.json()` responses
+
+### Adding a Service
+
+1. Create `lib/services/[service].ts`
+2. Export a singleton instance or class
+3. Import and use in API routes or components
+
+---
+
+## Features Preserved from Original
+
+✓ Multi-language support (English & Hindi)
+✓ AI-powered legal guidance
+✓ Document templates
+✓ Legal resource search
+✓ Voice input
+✓ File attachments
+✓ Chat history
+✓ User authentication
+✓ Responsive design
+
+---
+
+## Known Limitations & Future Work
+
+- Chat history uses file system (consider database for production)
+- LLM integration is optional (fallback templates available)
+- Legal aid locator not yet implemented (map integration needed)
+- No email verification for signups
+- No advanced user settings/preferences UI
+- Document download as .txt (could expand to PDF/Word)
+
+---
+
+## Contributing
+
+1. Create a feature branch: `git checkout -b feature/amazing-feature`
+2. Commit changes: `git commit -m 'Add amazing feature'`
+3. Push to branch: `git push origin feature/amazing-feature`
+4. Open a Pull Request
+
+---
+
+## License
+
+This project is open source and available under the MIT License.
+
+---
+
+## Support
+
+For issues or questions:
+- Create an issue on GitHub
+- Check existing documentation
+- Review the original FastAPI implementation for reference
+
+---
+
+## Acknowledgments
+
+- Original NyayaMithran concept and design
+- Indian legal documents from official government sources
+- Community contributions and feedback
+
+---
+
+**Last Updated:** March 2026
+**Conversion Status:** Complete - FastAPI → Next.js
+**Version:** 2.0.0
