@@ -32,31 +32,31 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <Navigation user={user} />
       
-      <main className="container-main py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8 text-primary">Dashboard</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Quick Stats */}
-          <div className="card bg-gradient-to-br from-primary to-secondary text-white">
+          <div className="bg-white rounded-lg shadow-md p-6 bg-gradient-to-br from-primary to-secondary text-white">
             <h3 className="text-lg font-semibold mb-2">Chat Sessions</h3>
             <p className="text-4xl font-bold">{sessions?.length || 0}</p>
           </div>
 
-          <div className="card bg-gradient-to-br from-secondary to-accent text-white">
+          <div className="bg-white rounded-lg shadow-md p-6 bg-gradient-to-br from-secondary to-accent text-white">
             <h3 className="text-lg font-semibold mb-2">Questions Asked</h3>
             <p className="text-4xl font-bold">
               {sessions?.reduce((sum: number, s: any) => sum + s.messages.length, 0) || 0}
             </p>
           </div>
 
-          <div className="card bg-gradient-to-br from-success to-green-600 text-white">
+          <div className="bg-white rounded-lg shadow-md p-6 bg-gradient-to-br from-success to-green-600 text-white">
             <h3 className="text-lg font-semibold mb-2">Joined</h3>
             <p className="text-lg">{new Date(user.createdAt).toLocaleDateString()}</p>
           </div>
         </div>
 
         {/* Recent Sessions */}
-        <div className="card">
+        <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold mb-6">Recent Chat Sessions</h2>
           {isLoading ? (
             <div className="text-center py-8">Loading...</div>

@@ -50,7 +50,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark text-white">
       {/* Navigation */}
-      <nav className="flex justify-between items-center px-6 py-4 container-main">
+      <nav className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold">{t.title}</h1>
         <div className="flex gap-4 items-center">
           <select
@@ -61,17 +61,17 @@ export default function Home() {
             <option value="en">English</option>
             <option value="hi">हिंदी</option>
           </select>
-          <Link href="/login" className="btn-outline hover:bg-white hover:text-primary">
+          <Link href="/login" className="px-4 py-2 border-2 border-white text-white rounded-lg font-medium hover:bg-white hover:text-primary transition-colors">
             {t.login}
           </Link>
-          <Link href="/signup" className="btn-primary">
+          <Link href="/signup" className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
             {t.signup}
           </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="py-20 container-main text-center">
+      <section className="py-20 max-w-7xl mx-auto px-4 text-center">
         <h2 className="text-5xl font-bold mb-4">{t.subtitle}</h2>
         <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">{t.description}</p>
         <button
@@ -84,7 +84,7 @@ export default function Home() {
 
       {/* Features Section */}
       <section className="py-16 bg-primary-dark/50">
-        <div className="container-main">
+        <div className="max-w-7xl mx-auto px-4">
           <h3 className="text-3xl font-bold text-center mb-12">{t.featureTitle}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {t.features_list.map((feature, i) => (

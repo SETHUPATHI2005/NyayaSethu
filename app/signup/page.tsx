@@ -86,7 +86,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="card bg-white shadow-lg">
+        <div className="bg-white rounded-lg shadow-md p-6 shadow-lg">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-primary">{t.title}</h1>
             <select
@@ -161,7 +161,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating account...' : t.signup}
             </button>

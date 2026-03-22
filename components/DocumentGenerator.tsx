@@ -111,7 +111,7 @@ export default function DocumentGenerator({ templateId, onBack }: DocumentGenera
         </div>
 
         {!generated ? (
-          <form onSubmit={handleSubmit} className="card space-y-6">
+          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
             {template.fields.map((field: any) => (
               <div key={field.name}>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -140,12 +140,12 @@ export default function DocumentGenerator({ templateId, onBack }: DocumentGenera
               </div>
             ))}
 
-            <button type="submit" className="w-full btn-primary">
+            <button type="submit" className="w-full px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
               Generate Document
             </button>
           </form>
         ) : (
-          <div className="card">
+          <div className="bg-white rounded-lg shadow-md p-6">
             <div className="mb-6 p-6 bg-gray-50 rounded-lg max-h-96 overflow-y-auto">
               <h2 className="text-xl font-bold mb-4">{template.title}</h2>
               {Object.entries(formData).map(([key, value]) => (
@@ -159,13 +159,13 @@ export default function DocumentGenerator({ templateId, onBack }: DocumentGenera
             <div className="flex gap-4">
               <button
                 onClick={() => setGenerated(false)}
-                className="flex-1 btn-outline"
+                className="flex-1 px-4 py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-colors"
               >
                 Edit
               </button>
               <button
                 onClick={handleDownload}
-                className="flex-1 btn-primary flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors flex items-center justify-center gap-2"
               >
                 <Download size={20} />
                 Download

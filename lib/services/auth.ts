@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import crypto from 'crypto';
 
 export interface User {
@@ -12,45 +10,12 @@ export interface User {
   lastLogin: string;
 }
 
+// In-memory storage for demo purposes
+// For production, integrate with a database like Supabase, Neon, or AWS RDS
+const memoryStore: { users: User[] } = { users: [] };
+
 class AuthService {
-  private usersFile = path.join(process.cwd(), 'public/data/users.json');
-  private users: User[] = [];
-
-  constructor() {
-    this.loadUsers();
-  }
-
-  private loadUsers() {
-    try {
-      const dir = path.dirname(this.usersFile);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      
-      if (fs.existsSync(this.usersFile)) {
-        const data = fs.readFileSync(this.usersFile, 'utf-8');
-        this.users = JSON.parse(data);
-      } else {
-        this.users = [];
-        this.saveUsers();
-      }
-    } catch (error) {
-      console.error('Error loading users:', error);
-      this.users = [];
-    }
-  }
-
-  private saveUsers() {
-    try {
-      const dir = path.dirname(this.usersFile);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      fs.writeFileSync(this.usersFile, JSON.stringify(this.users, null, 2));
-    } catch (error) {
-      console.error('Error saving users:', error);
-    }
-  }
+  private users: User[] = memoryStore.users;
 
   private hashPassword(password: string): string {
     return crypto
@@ -62,7 +27,7 @@ class AuthService {
     return this.hashPassword(password) === hash;
   }
 
-  register(email: string, password: string, name: string, language: string = 'en'): { success: boolean; message: string; user?: User } {
+  register(email: string, password: string, name: string, language: string = 'en'): { success: boolean; message: string; user?: Omit<User, 'password'> } {
     // Validate email
     if (!email || !email.includes('@')) {
       return { success: false, message: 'Invalid email address' };
@@ -89,17 +54,16 @@ class AuthService {
     };
 
     this.users.push(user);
-    this.saveUsers();
 
     const { password: _, ...userWithoutPassword } = user;
     return {
       success: true,
       message: 'User registered successfully',
-      user: userWithoutPassword as any,
+      user: userWithoutPassword,
     };
   }
 
-  login(email: string, password: string): { success: boolean; message: string; user?: User } {
+  login(email: string, password: string): { success: boolean; message: string; user?: Omit<User, 'password'> } {
     const user = this.users.find(u => u.email === email);
 
     if (!user) {
@@ -112,21 +76,20 @@ class AuthService {
 
     // Update last login
     user.lastLogin = new Date().toISOString();
-    this.saveUsers();
 
     const { password: _, ...userWithoutPassword } = user;
     return {
       success: true,
       message: 'Login successful',
-      user: userWithoutPassword as any,
+      user: userWithoutPassword,
     };
   }
 
-  getUserById(id: string): User | undefined {
+  getUserById(id: string): Omit<User, 'password'> | undefined {
     const user = this.users.find(u => u.id === id);
     if (user) {
       const { password: _, ...userWithoutPassword } = user;
-      return userWithoutPassword as any;
+      return userWithoutPassword;
     }
     return undefined;
   }
@@ -135,13 +98,12 @@ class AuthService {
     const user = this.users.find(u => u.id === userId);
     if (user) {
       user.language = language;
-      this.saveUsers();
       return true;
     }
     return false;
   }
 
-  verifyToken(token: string): User | null {
+  verifyToken(token: string): Omit<User, 'password'> | null {
     // Simple token verification - in production, use JWT
     try {
       const decoded = Buffer.from(token, 'base64').toString('utf-8');

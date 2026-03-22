@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -19,23 +16,11 @@ export interface ChatSession {
   language: string;
 }
 
+// In-memory storage for demo purposes
+// For production, integrate with a database like Supabase, Neon, or AWS RDS
+const sessionStore: Map<string, ChatSession[]> = new Map();
+
 class ChatService {
-  private chatDir = path.join(process.cwd(), 'public/data/chats');
-
-  constructor() {
-    this.ensureDir();
-  }
-
-  private ensureDir() {
-    if (!fs.existsSync(this.chatDir)) {
-      fs.mkdirSync(this.chatDir, { recursive: true });
-    }
-  }
-
-  private getSessionPath(userId: string, sessionId: string): string {
-    return path.join(this.chatDir, `${userId}_${sessionId}.json`);
-  }
-
   createSession(userId: string, language: string = 'en'): ChatSession {
     const sessionId = this.generateId();
     const session: ChatSession = {
@@ -48,31 +33,16 @@ class ChatService {
       language,
     };
 
-    this.saveSession(session);
+    if (!sessionStore.has(userId)) {
+      sessionStore.set(userId, []);
+    }
+    sessionStore.get(userId)?.push(session);
     return session;
   }
 
   getSession(userId: string, sessionId: string): ChatSession | null {
-    try {
-      const filePath = this.getSessionPath(userId, sessionId);
-      if (fs.existsSync(filePath)) {
-        const data = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(data);
-      }
-    } catch (error) {
-      console.error('Error reading session:', error);
-    }
-    return null;
-  }
-
-  saveSession(session: ChatSession) {
-    try {
-      this.ensureDir();
-      const filePath = this.getSessionPath(session.userId, session.id);
-      fs.writeFileSync(filePath, JSON.stringify(session, null, 2));
-    } catch (error) {
-      console.error('Error saving session:', error);
-    }
+    const sessions = sessionStore.get(userId) || [];
+    return sessions.find(s => s.id === sessionId) || null;
   }
 
   addMessage(userId: string, sessionId: string, role: 'user' | 'assistant', content: string, language: string = 'en'): ChatMessage | null {
@@ -95,41 +65,22 @@ class ChatService {
       session.title = content.substring(0, 50);
     }
 
-    this.saveSession(session);
     return message;
   }
 
   getSessions(userId: string): ChatSession[] {
-    try {
-      const files = fs.readdirSync(this.chatDir);
-      const userFiles = files.filter(f => f.startsWith(`${userId}_`));
-
-      return userFiles
-        .map(file => {
-          try {
-            const data = fs.readFileSync(path.join(this.chatDir, file), 'utf-8');
-            return JSON.parse(data);
-          } catch {
-            return null;
-          }
-        })
-        .filter((s): s is ChatSession => s !== null)
-        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-    } catch (error) {
-      console.error('Error listing sessions:', error);
-      return [];
-    }
+    const sessions = sessionStore.get(userId) || [];
+    return sessions.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }
 
   deleteSession(userId: string, sessionId: string): boolean {
-    try {
-      const filePath = this.getSessionPath(userId, sessionId);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        return true;
-      }
-    } catch (error) {
-      console.error('Error deleting session:', error);
+    const sessions = sessionStore.get(userId);
+    if (!sessions) return false;
+
+    const index = sessions.findIndex(s => s.id === sessionId);
+    if (index !== -1) {
+      sessions.splice(index, 1);
+      return true;
     }
     return false;
   }

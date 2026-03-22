@@ -70,7 +70,7 @@ export default function DocumentsPage() {
     <div className="min-h-screen bg-gray-50">
       <Navigation user={user} />
 
-      <main className="container-main py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-2 text-primary">Legal Documents</h1>
         <p className="text-gray-600 mb-8">Choose a template to create your legal document</p>
 
@@ -83,12 +83,12 @@ export default function DocumentsPage() {
                 .map(template => (
                   <div
                     key={template.id}
-                    className="card hover:shadow-lg transition-shadow cursor-pointer"
+                    className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer"
                     onClick={() => setSelectedTemplate(template.id)}
                   >
                     <h3 className="text-xl font-bold text-primary mb-2">{template.title}</h3>
                     <p className="text-gray-600">{template.description}</p>
-                    <button className="mt-4 btn-secondary w-full">
+                    <button className="mt-4 px-4 py-2 bg-secondary text-white rounded-lg font-medium hover:bg-primary transition-colors w-full">
                       Start
                     </button>
                   </div>

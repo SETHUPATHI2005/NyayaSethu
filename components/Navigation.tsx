@@ -28,7 +28,7 @@ export default function Navigation({ user }: NavigationProps) {
 
   return (
     <nav className="bg-primary text-white shadow-lg">
-      <div className="container-main py-4 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold">
           NyayaMithran
         </Link>
@@ -66,7 +66,7 @@ export default function Navigation({ user }: NavigationProps) {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-primary-dark">
-          <div className="container-main py-4 space-y-4">
+          <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
             {navLinks.map(link => (
               <Link
                 key={link.href}

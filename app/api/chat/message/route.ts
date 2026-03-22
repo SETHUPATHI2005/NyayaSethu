@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     chatService.addMessage(userId, sessionId, 'user', message, language || 'en');
 
     // Search for relevant legal information
-    const searchResults = ragService.search(message, language || 'en', 3);
+    const searchResults = ragService.search(message, 3);
     let context = '';
     
     if (searchResults.length > 0) {

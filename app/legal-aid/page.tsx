@@ -23,7 +23,7 @@ export default function LegalAidPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation user={user} />
-      <main className="container-main py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         <LegalSearch user={user} />
       </main>
     </div>

@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
 interface LegalDocument {
   id: string;
   title: string;
@@ -17,9 +14,22 @@ interface SearchResult {
   category: string;
 }
 
+// Sample legal categories and content for fallback
+const DEFAULT_LEGAL_CONTENT = {
+  'Indian Penal Code': 'The Indian Penal Code, 1860 is the main criminal law of India.',
+  'Constitution of India': 'The Constitution of India is the supreme law of India.',
+  'Civil Procedure Code': 'The Civil Procedure Code, 1908 governs civil proceedings.',
+  'Criminal Procedure Code': 'The Criminal Procedure Code, 1973 governs criminal procedures.',
+  'Indian Contract Act': 'The Indian Contract Act, 1872 governs contracts in India.',
+  'Sale of Goods Act': 'The Sale of Goods Act, 1930 regulates sale of goods.',
+  'Limited Liability Partnership Act': 'The Limited Liability Partnership Act, 2008 governs LLPs.',
+  'Patents Act': 'The Patents Act, 1970 protects inventions and patents.',
+  'Trademarks Act': 'The Trademarks Act, 1999 protects trademarks.',
+  'Copyrights Act': 'The Copyrights Act, 1957 protects literary and artistic works.',
+};
+
 class RAGService {
   private documents: LegalDocument[] = [];
-  private dataPath = path.join(process.cwd(), 'public/data');
 
   constructor() {
     this.loadDocuments();
@@ -27,12 +37,16 @@ class RAGService {
 
   private loadDocuments() {
     try {
-      const filePath = path.join(this.dataPath, 'indian_laws_en.json');
-      if (fs.existsSync(filePath)) {
-        const data = fs.readFileSync(filePath, 'utf-8');
-        const parsed = JSON.parse(data);
-        this.documents = Array.isArray(parsed) ? parsed : parsed.laws || [];
-      }
+      // Create basic documents from defaults
+      Object.entries(DEFAULT_LEGAL_CONTENT).forEach(([title, content], index) => {
+        this.documents.push({
+          id: `doc-${index}`,
+          title,
+          content,
+          category: 'Indian Law',
+          language: 'en',
+        });
+      });
     } catch (error) {
       console.error('Error loading legal documents:', error);
       this.documents = [];
@@ -42,98 +56,94 @@ class RAGService {
   private calculateSimilarity(query: string, text: string): number {
     const queryTerms = query.toLowerCase().split(/\s+/);
     const textLower = text.toLowerCase();
-    
+
     let matches = 0;
     for (const term of queryTerms) {
       if (textLower.includes(term)) {
         matches++;
       }
     }
-    
-    return matches / queryTerms.length;
+
+    return matches / Math.max(queryTerms.length, 1);
   }
 
-  private extractKeywords(text: string): string[] {
-    const commonWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-      'of', 'with', 'is', 'are', 'was', 'were', 'be', 'been', 'by'
-    ]);
-    
-    const words = text.toLowerCase()
-      .split(/\W+/)
-      .filter(w => w.length > 3 && !commonWords.has(w));
-    
-    return [...new Set(words)];
-  }
-
-  search(query: string, language: string = 'en', limit: number = 5): SearchResult[] {
-    if (!query || query.trim().length === 0) {
+  search(query: string, topK: number = 5): SearchResult[] {
+    if (!query.trim()) {
       return [];
     }
 
-    const keywords = this.extractKeywords(query);
-    
-    const scoredDocs = this.documents
-      .filter(doc => doc.language === language)
-      .map(doc => {
-        let score = 0;
-        
-        // Title match (weighted higher)
-        if (doc.title.toLowerCase().includes(query.toLowerCase())) {
-          score += 2;
-        }
-        
-        // Content match
-        score += this.calculateSimilarity(query, doc.content) * 1.5;
-        
-        // Keyword matching
-        const docKeywords = this.extractKeywords(doc.content);
-        const matchingKeywords = keywords.filter(k => docKeywords.includes(k));
-        score += matchingKeywords.length * 0.5;
-        
-        return { doc, score };
-      })
+    const results = this.documents
+      .map(doc => ({
+        id: doc.id,
+        title: doc.title,
+        excerpt: doc.content.substring(0, 200),
+        score: this.calculateSimilarity(query, `${doc.title} ${doc.content}`),
+        category: doc.category,
+      }))
+      .filter(r => r.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, limit);
+      .slice(0, topK);
 
-    return scoredDocs.map(({ doc, score }) => ({
-      id: doc.id,
-      title: doc.title,
-      excerpt: doc.content.substring(0, 200) + '...',
-      score,
-      category: doc.category,
-    }));
+    // If no results found, return topic-based fallback
+    if (results.length === 0) {
+      return this.getTopicFallback(query);
+    }
+
+    return results;
   }
 
-  getDocumentById(id: string): LegalDocument | undefined {
-    return this.documents.find(doc => doc.id === id);
+  private getTopicFallback(query: string): SearchResult[] {
+    const queryLower = query.toLowerCase();
+    const keywords: { [key: string]: string[] } = {
+      'criminal': ['Indian Penal Code', 'Criminal Procedure Code'],
+      'civil': ['Civil Procedure Code', 'Constitution of India'],
+      'contract': ['Indian Contract Act', 'Sale of Goods Act'],
+      'business': ['Limited Liability Partnership Act', 'Patents Act'],
+      'intellectual': ['Patents Act', 'Trademarks Act', 'Copyrights Act'],
+      'property': ['Sale of Goods Act', 'Constitution of India'],
+    };
+
+    let relevantDocs: string[] = [];
+    for (const [keyword, docs] of Object.entries(keywords)) {
+      if (queryLower.includes(keyword)) {
+        relevantDocs = docs;
+        break;
+      }
+    }
+
+    if (relevantDocs.length === 0) {
+      // Return first few documents as general fallback
+      relevantDocs = Object.keys(DEFAULT_LEGAL_CONTENT).slice(0, 3);
+    }
+
+    return relevantDocs
+      .map((title, index) => ({
+        id: `fallback-${index}`,
+        title,
+        excerpt: DEFAULT_LEGAL_CONTENT[title as keyof typeof DEFAULT_LEGAL_CONTENT] || '',
+        score: 0.5,
+        category: 'Indian Law',
+      }))
+      .slice(0, 5);
   }
 
   getCategories(): string[] {
-    return [...new Set(this.documents.map(doc => doc.category))];
+    const categories = new Set(this.documents.map(d => d.category));
+    return Array.from(categories);
   }
 
-  searchByCategory(category: string, language: string = 'en'): LegalDocument[] {
-    return this.documents.filter(
-      doc => doc.category === category && doc.language === language
-    );
-  }
-
-  getTopicsForFallback(): string[] {
-    const topics = [
-      'Criminal Law',
-      'Civil Rights',
-      'Family Law',
-      'Property Rights',
-      'Labor Law',
-      'Constitutional Rights',
-      'Consumer Rights',
-      'Women Rights',
-      'Child Protection',
-      'Disability Rights',
-    ];
-    return topics;
+  getDocumentsByCategory(category: string): SearchResult[] {
+    return this.documents
+      .filter(d => d.category === category)
+      .map(d => ({
+        id: d.id,
+        title: d.title,
+        excerpt: d.content.substring(0, 200),
+        score: 1,
+        category: d.category,
+      }));
   }
 }
 
 export const ragService = new RAGService();
+export type { SearchResult, LegalDocument };
