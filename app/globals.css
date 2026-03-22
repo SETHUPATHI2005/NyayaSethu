@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: 'Inter', sans-serif;
+  --color-primary: #0F4C75;
+  --color-primary-dark: #0A2E47;
+  --color-secondary: #3282B8;
+  --color-accent: #FFD60A;
+  --color-success: #06D6A0;
+  --color-warning: #FF9D5C;
+  --color-error: #EF476F;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter);
+  background-color: #f9fafb;
+  color: #111827;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-secondary text-white rounded-lg font-medium hover:bg-primary transition-colors;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-colors;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+
+  .container-main {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  .sr-only {
+    @apply absolute w-1 h-1 p-0 m-[-1px] overflow-hidden clip-[rect(0,0,0,0)] whitespace-nowrap border-0;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

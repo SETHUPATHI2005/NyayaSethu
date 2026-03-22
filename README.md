@@ -1,295 +1,374 @@
-# ⚖️ NyayaMithra — AI Legal Guidance for India
+# NyayaMithran — AI Legal Guidance for India
 
 AI-powered legal assistance for every Indian citizen. Free, multilingual, always available.
 
----
+## Overview
 
-## 📁 Project Structure
+NyayaMithran is a modern, fullstack **Next.js 16** application with React components, TypeScript, and **Supabase PostgreSQL** database. This enables:
 
-```
-legalai/
-├── frontend/                   # Plain HTML/CSS/JS
-│   ├── index.html              # Landing page
-│   ├── chat.html               # AI chat interface
-│   ├── document.html           # Legal document generator
-│   ├── aid.html                # Nearby legal aid finder
-│   ├── css/
-│   │   ├── global.css          # Shared styles, nav, buttons
-│   │   ├── landing.css         # Landing page styles
-│   │   ├── chat.css            # Chat interface styles
-│   │   ├── document.css        # Document generator styles
-│   │   └── aid.css             # Legal aid finder styles
-│   └── js/
-│       ├── nav.js              # Navigation behaviour
-│       ├── landing.js          # Landing page animations
-│       ├── chat.js             # Chat + voice + API calls
-│       ├── document.js         # Document templates + generator
-│       └── aid.js              # Aid search + map
-│
-└── backend/                    # FastAPI Python
-    ├── main.py                 # App entry point
-    ├── requirements.txt
-    ├── .env.example            # Copy to .env and fill keys
-    ├── routers/
-    │   ├── chat.py             # POST /api/chat
-    │   ├── document.py         # POST /api/document/generate
-    │   ├── legal_aid.py        # GET  /api/legal-aid/search
-    │   └── health.py           # GET  /api/health
-    ├── models/
-    │   └── schemas.py          # Pydantic request/response models
-    ├── services/
-    │   ├── rag_service.py      # Vector search (FAISS) + keyword fallback
-    │   ├── llm_service.py      # Hugging Face / OpenAI / rule-based
-    │   ├── language_service.py # Language detection + translation
-    │   ├── document_service.py # 13 legal document templates
-    │   └── legal_aid_service.py# Legal aid search (Google Places / seed)
-    └── data/
-        └── (place .json knowledge base files here)
-```
+- **Server-side rendering** for better SEO
+- **API routes** for backend logic  
+- **React components** for dynamic UIs
+- **Supabase PostgreSQL** for secure, scalable data persistence
+- **Row Level Security (RLS)** for user data protection
+- **Serverless deployment** ready (Vercel, AWS Lambda, etc.)
 
 ---
 
-## 🚀 Quick Start
+## Prerequisites
 
-### Windows one-command setup + run
-
-```powershell
-.\start.bat
-```
-
-This will automatically:
-- create `.venv` if missing
-- install/update dependencies from `requirements.txt`
-- auto-build/refresh `data/indian_laws_en.json` from government portals when missing or stale
-- start the app on `http://127.0.0.1:8000`
-
-Optional flags:
-
-```powershell
-.\start.bat -NoInstall
-.\start.bat -Reload
-.\start.bat -Port 9000
-.\start.bat -ForceLawsRefresh
-.\start.bat -SkipLawsBuild
-.\start.bat -TranslateLangs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur -TranslateMaxRecords 500
-.\start.bat -EnableOfflineLanguages
-.\start.bat -EnableOfflineLanguages -OfflineLangs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur
-.\start.bat -EnableOfflineLanguages -ForceOfflinePackInstall
-```
-
-### Deploy Backend on Fly.io
-
-```bash
-# Install and login once
-fly auth login
-
-# Create app (if not already created)
-fly launch --no-deploy
-
-# Set Netlify frontend origin for CORS
-fly secrets set ALLOWED_ORIGINS=https://nyayamithra.netlify.app
-
-# Deploy
-fly deploy
-```
-
-After deploy, update frontend backend URL once:
-
-`https://nyayamithra.netlify.app/?api=https://<your-fly-app>.fly.dev`
-
-### 1. Frontend (no build needed)
-
-```bash
-# Serve with any static server:
-cd frontend
-python -m http.server 3000
-# Open http://localhost:3000
-```
-
-Or with VS Code **Live Server** extension.
-
-### 2. Backend
-
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy and configure environment
-cp .env.example .env
-# Edit .env with your API keys
-
-# Run server
-uvicorn main:app --reload --port 8000
-```
-
-API docs available at: **http://localhost:8000/api/docs**
+- Node.js 18+ and npm/yarn/pnpm
+- A Supabase account (free tier available at https://supabase.com)
+- Git for version control
 
 ---
 
-## 🔑 API Keys Required
+## Setup Instructions
 
-| Key | Purpose | Get it |
-|-----|---------|--------|
-| `HF_API_TOKEN` | LLM inference (Hugging Face) | https://huggingface.co/settings/tokens |
-| `GOOGLE_MAPS_API_KEY` | Legal aid map search | Google Cloud Console |
-| `OPENAI_API_KEY` | Optional OpenAI fallback | https://platform.openai.com |
+### 1. Clone the Repository
 
-> **Without keys:** The app works in fallback mode — RAG keyword search + rule-based answers + demo map data. All 4 pages are fully functional.
+```bash
+git clone https://github.com/SETHUPATHI2005/NyayaMithran.git
+cd NyayaMithran
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### 3. Set Up Supabase
+
+1. **Create a Supabase Project:**
+   - Go to https://supabase.com and sign up/login
+   - Click "New Project" and fill in the details
+   - Wait for the project to be created
+
+2. **Get Your Credentials:**
+   - Go to Project Settings → API
+   - Copy `Project URL` and `anon public` key
+   - Also copy `service_role key` for server-side operations
+
+3. **Create Environment Variables:**
+   - Copy `.env.example` to `.env.local`:
+     ```bash
+     cp .env.example .env.local
+     ```
+   - Fill in your Supabase credentials:
+     ```env
+     NEXT_PUBLIC_SUPABASE_URL=your_project_url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+     NEXT_PUBLIC_SITE_URL=http://localhost:3000
+     ```
+
+4. **Run Database Migrations:**
+   - Open Supabase SQL Editor
+   - Copy the contents of `scripts/001_create_tables.sql`
+   - Paste and execute in the SQL Editor
+   - This creates: `profiles`, `chat_sessions`, `chat_messages` tables with RLS policies
+
+### 4. Start Development Server
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:3000`
 
 ---
 
-## 🧠 RAG Pipeline
+## Tech Stack
 
-To enable full vector search:
+**Frontend:**
+- Next.js 16 (React 19)
+- TypeScript
+- Tailwind CSS
+- SWR for data fetching
+- Lucide React for icons
 
-```bash
-pip install faiss-cpu sentence-transformers
-```
+**Backend:**
+- Next.js API Routes (Node.js)
+- Supabase PostgreSQL
+- Row Level Security (RLS)
+- Auth Service (Supabase Auth)
 
-Add legal knowledge JSON files to `backend/data/`:
-
-```json
-[
-  {
-    "text": "Under Section 25F of the Industrial Disputes Act...",
-    "source": "Industrial Disputes Act, 1947 — Section 25F",
-    "topic": "labour",
-    "acts": ["Industrial Disputes Act, 1947"]
-  }
-]
-```
-
-The RAG service auto-loads all `.json` files from `data/` on startup and builds a FAISS index.
+**Services:**
+- RAG Service (keyword search + topic fallback for legal documents)
+- LLM Service (fallback responses with keyword matching)
+- Auth Service (Supabase authentication)
+- Chat Service (Supabase PostgreSQL persistence)
 
 ---
 
-## 📚 Build Full Indian Laws Dataset
+## Project Structure
 
-To ingest laws from:
-- `https://www.mha.gov.in/en/acts`
-- `https://www.legislative.gov.in/`
-
-Run:
-
-```bash
-python build_indian_laws_dataset.py --max-docs 200
 ```
-
-This writes:
-- `data/indian_laws_en.json` (English corpus)
-
-Optional multilingual export (uses OpenAI translation API):
-
-```bash
-# Set key first
-export OPENAI_API_KEY=your_key_here     # Windows PowerShell: $env:OPENAI_API_KEY="your_key_here"
-
-python build_indian_laws_dataset.py \
-  --max-docs 200 \
-  --translate-langs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur \
-  --translate-max-records 500
-```
-
-Additional controls:
-- `--chunk-chars 2200` and `--overlap-chars 250` tune chunking for RAG.
-- `--sleep 0.25` adds polite delay between downloads.
-- `--translate-max-records` helps control translation cost.
-
-After files are generated, restart backend and it will auto-load these JSON files from `data/`.
-
----
-
-## 🌐 Multilingual Support
-
-- Language **detection** is automatic (googletrans)
-- **22 Indian languages** supported for voice input (Web Speech API)
-- **Response translation** via Google Translate (free tier)
-- For production: switch to **Azure Translator** or **DeepL** for accuracy
-
-### Offline Language Mode
-
-NyayaMithra now supports offline-first translation for chat responses using Argos Translate.
-
-1. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-2. Install offline language packs once (requires internet only during installation):
-
-```bash
-python install_offline_language_packs.py --langs hi,bn,ta,te,mr,gu,kn,ml,or,pa,ur
-```
-
-3. Force offline translation mode:
-
-```bash
-# Windows PowerShell
-$env:TRANSLATION_MODE="offline"
-.\start.bat
-```
-
-Automated option:
-
-```powershell
-.\start.bat -EnableOfflineLanguages
-```
-
-This automatically:
-- sets `TRANSLATION_MODE=offline`
-- installs only missing local language packs
-- stores a marker in `data/offline_packs_marker.json` to skip repeated installs
-
-Modes:
-- `offline`: only local Argos translation (no network translation fallback)
-- `hybrid` (default): local Argos first, then online fallback if local pack missing
-- `online`: use online translator only
-
----
-
-## 📄 Document Templates (13 total)
-
-| Category | Templates |
-|----------|-----------|
-| Labour | Wrongful Termination, Unpaid Wages, PF/ESI Grievance, Maternity Leave |
-| Consumer | Consumer Court Complaint, Refund Notice, Online Fraud Complaint |
-| Women's Rights | Domestic Violence Application, POSH Complaint |
-| RTI & Civic | RTI Application, Police Complaint/FIR |
-| Property | Eviction Notice, Rent Dispute |
-
----
-
-## 🗺 Legal Aid Finder
-
-- Uses **Google Places API** for live nearby results
-- Falls back to curated **national database** of legal aid centres
-- Filter by type: Legal Aid / Labour / Consumer / Women / Police
-- Emergency helplines always shown (no API needed)
-
----
-
-## 🔧 Production Deployment
-
-```bash
-# Backend — Gunicorn + Uvicorn workers
-pip install gunicorn
-gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
-
-# Frontend — Nginx static serving
-# Point nginx root to frontend/ directory
-# Update API_BASE in js/ files to your production domain
+nyayamithran/
+├── app/
+│   ├── layout.tsx                  # Root layout
+│   ├── page.tsx                    # Landing page
+│   ├── globals.css                 # Global styles
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── signup/route.ts     # User registration
+│   │   │   └── login/route.ts      # User authentication
+│   │   ├── chat/
+│   │   │   ├── session/route.ts    # Create chat session
+│   │   │   ├── message/route.ts    # Send/receive messages
+│   │   │   └── sessions/[userId]/route.ts # List sessions
+│   │   ├── legal/
+│   │   │   ├── search/route.ts     # Search legal documents
+│   │   │   └── categories/route.ts # Get categories
+│   ├── auth/
+│   │   ├── login/page.tsx          # Login page (Supabase)
+│   │   ├── sign-up/page.tsx        # Signup page (Supabase)
+│   │   ├── callback/route.ts       # Auth callback
+│   │   └── error/page.tsx          # Auth error page
+│   ├── chat/
+│   │   └── page.tsx                # Chat interface
+│   ├── dashboard/
+│   │   └── page.tsx                # User dashboard
+│   ├── documents/
+│   │   └── page.tsx                # Legal documents
+│   └── legal-aid/
+│       └── page.tsx                # Legal search page
+├── components/
+│   ├── Navigation.tsx              # Navigation bar
+│   ├── ChatInterface.tsx           # Chat UI
+│   ├── ChatMessage.tsx             # Message component
+│   ├── ChatInput.tsx               # Input area
+│   ├── LegalSearch.tsx             # Search component
+│   └── DocumentGenerator.tsx       # Doc generator
+├── lib/
+│   ├── supabase/
+│   │   ├── client.ts               # Browser client
+│   │   ├── server.ts               # Server client
+│   │   └── proxy.ts                # Proxy handlers
+│   └── services/
+│       ├── auth.ts                 # Auth service
+│       ├── chat.ts                 # Chat service
+│       ├── rag.ts                  # RAG service
+│       └── llm.ts                  # LLM service
+├── middleware.ts                   # Auth middleware
+├── next.config.js                  # Next.js config
+├── tailwind.config.js              # Tailwind config
+├── tsconfig.json                   # TypeScript config
+├── package.json                    # Dependencies
+├── scripts/
+│   └── 001_create_tables.sql       # Database schema
+└── public/
+    ├── data/
+    │   ├── users.json              # User data (deprecated)
+    │   ├── indian_laws_en.json     # Legal documents
+    │   └── chats/                  # Chat history (deprecated)
 ```
 
 ---
 
-## ⚠️ Legal Disclaimer
+## Database Schema
 
-NyayaMithra provides **legal information**, not legal advice. For complex legal matters, consult a qualified advocate. Contact **NALSA** (National Legal Services Authority) at **15100** for free professional legal aid.
+### Profiles Table
+```sql
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  name TEXT,
+  email TEXT,
+  language TEXT DEFAULT 'en',
+  last_login TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
 
+### Chat Sessions Table
+```sql
+CREATE TABLE chat_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
+  title TEXT DEFAULT 'New Chat',
+  language TEXT DEFAULT 'en',
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Chat Messages Table
+```sql
+CREATE TABLE chat_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id UUID NOT NULL REFERENCES chat_sessions(id),
+  role TEXT NOT NULL ('user', 'assistant'),
+  content TEXT NOT NULL,
+  language TEXT DEFAULT 'en',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+All tables have RLS policies enabled to ensure users can only access their own data.
+
+---
+
+## Features
+
+### 1. Authentication
+- Email/password signup with Supabase Auth
+- Email confirmation required
+- Secure session management with HTTP-only cookies
+- Multi-language support (English, Hindi)
+
+### 2. Chat Interface
+- Create multiple chat sessions
+- Real-time message history with Supabase
+- AI-powered legal responses
+- Voice input support (browser native)
+- File attachment support
+
+### 3. Legal Information
+- RAG-powered search on Indian laws
+- Topic-based fallback suggestions
+- Keyword matching for legal documents
+- Category-based browsing
+
+### 4. Document Generator
+- 6 legal document templates
+- Form-based input
+- PDF export functionality
+- Multi-language support
+
+### 5. Dashboard
+- Chat session statistics
+- Recent conversations
+- Quick access to features
+- User profile management
+
+---
+
+## API Routes
+
+### Auth
+- `POST /api/auth/signup` - Register new user
+- `POST /api/auth/login` - Authenticate user
+- `GET /api/auth/callback` - Email confirmation callback
+
+### Chat
+- `POST /api/chat/session` - Create new session
+- `POST /api/chat/message` - Send message
+- `GET /api/chat/sessions/[userId]` - List user's sessions
+- `DELETE /api/chat/sessions/[userId]` - Delete session
+
+### Legal
+- `GET /api/legal/search?q=query` - Search legal documents
+- `GET /api/legal/categories` - Get legal categories
+
+---
+
+## Environment Variables
+
+Required for Supabase:
+```env
+NEXT_PUBLIC_SUPABASE_URL=        # Your Supabase project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=   # Supabase public anon key
+NEXT_PUBLIC_SITE_URL=            # Your app URL (for email redirects)
+```
+
+Optional:
+```env
+HUGGINGFACE_API_KEY=             # For enhanced LLM responses
+OPENAI_API_KEY=                  # For OpenAI integration
+```
+
+---
+
+## Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. Push code to GitHub
+2. Go to https://vercel.com and import the repository
+3. Add environment variables in Vercel dashboard
+4. Deploy automatically on push
+
+### Deploy Elsewhere
+
+The app is fully serverless-ready and can be deployed to:
+- AWS Lambda
+- Google Cloud Run
+- Azure Functions
+- Self-hosted Node.js servers
+
+---
+
+## Development
+
+### Run Dev Server
+```bash
+npm run dev
+```
+
+### Build for Production
+```bash
+npm run build
+npm run start
+```
+
+### Lint Code
+```bash
+npm run lint
+```
+
+---
+
+## Troubleshooting
+
+### "Supabase URL or Key not found"
+- Check `.env.local` has correct NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+- Restart dev server after changing env vars
+
+### "Email confirmation failed"
+- Ensure NEXT_PUBLIC_SITE_URL matches your actual domain
+- Check Supabase email settings in Project → Authentication → Email
+
+### "Chat not saving"
+- Verify RLS policies are enabled in Supabase
+- Check user authentication with `getCurrentUser()` in services
+
+### "Legal search not working"
+- Ensure `public/data/indian_laws_en.json` exists
+- Verify RAG service can load the legal documents
+
+---
+
+## Contributing
+
+We welcome contributions! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+---
+
+## License
+
+MIT License - See LICENSE file for details
+
+---
+
+## Support
+
+For issues or questions:
+- GitHub Issues: https://github.com/SETHUPATHI2005/NyayaMithran/issues
+- Email: support@nyayamithran.in
+
+---
+
+## Acknowledgments
+
+- Built with Next.js, React, and Tailwind CSS
+- Legal data from Indian law resources
+- Powered by Supabase for database and authentication
