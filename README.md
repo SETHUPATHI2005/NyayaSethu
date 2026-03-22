@@ -4,13 +4,81 @@ AI-powered legal assistance for every Indian citizen. Free, multilingual, always
 
 ## Overview
 
-NyayaMithran has been converted from a FastAPI/Python backend with vanilla HTML/CSS/JS frontend to a modern, fullstack **Next.js 16** application with React components and TypeScript. This enables:
+NyayaMithran is a modern, fullstack **Next.js 16** application with React components, TypeScript, and **Supabase PostgreSQL** database. This enables:
 
 - **Server-side rendering** for better SEO
-- **API routes** for backend logic
+- **API routes** for backend logic  
 - **React components** for dynamic UIs
-- **Built-in file system storage** for user data and chat history
+- **Supabase PostgreSQL** for secure, scalable data persistence
+- **Row Level Security (RLS)** for user data protection
 - **Serverless deployment** ready (Vercel, AWS Lambda, etc.)
+
+---
+
+## Prerequisites
+
+- Node.js 18+ and npm/yarn/pnpm
+- A Supabase account (free tier available at https://supabase.com)
+- Git for version control
+
+---
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/SETHUPATHI2005/NyayaMithran.git
+cd NyayaMithran
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### 3. Set Up Supabase
+
+1. **Create a Supabase Project:**
+   - Go to https://supabase.com and sign up/login
+   - Click "New Project" and fill in the details
+   - Wait for the project to be created
+
+2. **Get Your Credentials:**
+   - Go to Project Settings → API
+   - Copy `Project URL` and `anon public` key
+   - Also copy `service_role key` for server-side operations
+
+3. **Create Environment Variables:**
+   - Copy `.env.example` to `.env.local`:
+     ```bash
+     cp .env.example .env.local
+     ```
+   - Fill in your Supabase credentials:
+     ```env
+     NEXT_PUBLIC_SUPABASE_URL=your_project_url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+     NEXT_PUBLIC_SITE_URL=http://localhost:3000
+     ```
+
+4. **Run Database Migrations:**
+   - Open Supabase SQL Editor
+   - Copy the contents of `scripts/001_create_tables.sql`
+   - Paste and execute in the SQL Editor
+   - This creates: `profiles`, `chat_sessions`, `chat_messages` tables with RLS policies
+
+### 4. Start Development Server
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:3000`
 
 ---
 
@@ -25,15 +93,15 @@ NyayaMithran has been converted from a FastAPI/Python backend with vanilla HTML/
 
 **Backend:**
 - Next.js API Routes (Node.js)
-- File-based JSON storage (users, chat sessions)
-- RAG Service (keyword search + topic fallback)
-- LLM Service (Hugging Face/OpenAI with fallback)
-- Auth Service (password hashing with PBKDF2)
+- Supabase PostgreSQL
+- Row Level Security (RLS)
+- Auth Service (Supabase Auth)
 
-**Data:**
-- `public/data/indian_laws_en.json` - Legal document corpus
-- `public/data/users.json` - User accounts
-- `public/data/chats/` - Chat session history
+**Services:**
+- RAG Service (keyword search + topic fallback for legal documents)
+- LLM Service (fallback responses with keyword matching)
+- Auth Service (Supabase authentication)
+- Chat Service (Supabase PostgreSQL persistence)
 
 ---
 
@@ -42,215 +110,177 @@ NyayaMithran has been converted from a FastAPI/Python backend with vanilla HTML/
 ```
 nyayamithran/
 ├── app/
-│   ├── layout.tsx                # Root layout with metadata
-│   ├── page.tsx                  # Landing/home page
-│   ├── globals.css               # Global styles & Tailwind
+│   ├── layout.tsx                  # Root layout
+│   ├── page.tsx                    # Landing page
+│   ├── globals.css                 # Global styles
 │   ├── api/
 │   │   ├── auth/
-│   │   │   ├── signup/route.ts   # User registration
-│   │   │   └── login/route.ts    # User authentication
+│   │   │   ├── signup/route.ts     # User registration
+│   │   │   └── login/route.ts      # User authentication
 │   │   ├── chat/
-│   │   │   ├── session/route.ts  # Create chat session
-│   │   │   ├── message/route.ts  # Send/receive messages
+│   │   │   ├── session/route.ts    # Create chat session
+│   │   │   ├── message/route.ts    # Send/receive messages
 │   │   │   └── sessions/[userId]/route.ts # List sessions
-│   │   └── legal/
-│   │       ├── search/route.ts   # Search legal documents
-│   │       └── categories/route.ts # Get categories
+│   │   ├── legal/
+│   │   │   ├── search/route.ts     # Search legal documents
+│   │   │   └── categories/route.ts # Get categories
+│   ├── auth/
+│   │   ├── login/page.tsx          # Login page (Supabase)
+│   │   ├── sign-up/page.tsx        # Signup page (Supabase)
+│   │   ├── callback/route.ts       # Auth callback
+│   │   └── error/page.tsx          # Auth error page
 │   ├── chat/
-│   │   └── page.tsx              # Chat interface page
+│   │   └── page.tsx                # Chat interface
 │   ├── dashboard/
-│   │   └── page.tsx              # User dashboard
+│   │   └── page.tsx                # User dashboard
 │   ├── documents/
-│   │   └── page.tsx              # Document templates
-│   ├── legal-aid/
-│   │   └── page.tsx              # Legal search/aid
-│   ├── login/
-│   │   └── page.tsx              # Login page
-│   └── signup/
-│       └── page.tsx              # Signup page
-│
+│   │   └── page.tsx                # Legal documents
+│   └── legal-aid/
+│       └── page.tsx                # Legal search page
 ├── components/
-│   ├── Navigation.tsx            # Top navigation bar
-│   ├── ChatInterface.tsx         # Main chat component
-│   ├── ChatMessage.tsx           # Individual message component
-│   ├── ChatInput.tsx             # Message input with voice/files
-│   ├── LegalSearch.tsx           # Legal document search
-│   └── DocumentGenerator.tsx     # Document template generator
-│
+│   ├── Navigation.tsx              # Navigation bar
+│   ├── ChatInterface.tsx           # Chat UI
+│   ├── ChatMessage.tsx             # Message component
+│   ├── ChatInput.tsx               # Input area
+│   ├── LegalSearch.tsx             # Search component
+│   └── DocumentGenerator.tsx       # Doc generator
 ├── lib/
-│   ├── services/
-│   │   ├── rag.ts               # Document search & retrieval
-│   │   ├── llm.ts               # AI response generation
-│   │   ├── auth.ts              # User authentication & management
-│   │   └── chat.ts              # Chat session management
-│   └── utils/
-│       └── (utility functions)
-│
-├── public/
-│   └── data/
-│       ├── indian_laws_en.json  # Legal documents corpus
-│       ├── users.json           # User database
-│       └── chats/               # Chat session files
-│
-├── package.json                 # Dependencies
-├── tsconfig.json               # TypeScript config
-├── tailwind.config.js          # Tailwind CSS config
-├── next.config.js              # Next.js config
-└── .env.example                # Environment variables template
+│   ├── supabase/
+│   │   ├── client.ts               # Browser client
+│   │   ├── server.ts               # Server client
+│   │   └── proxy.ts                # Proxy handlers
+│   └── services/
+│       ├── auth.ts                 # Auth service
+│       ├── chat.ts                 # Chat service
+│       ├── rag.ts                  # RAG service
+│       └── llm.ts                  # LLM service
+├── middleware.ts                   # Auth middleware
+├── next.config.js                  # Next.js config
+├── tailwind.config.js              # Tailwind config
+├── tsconfig.json                   # TypeScript config
+├── package.json                    # Dependencies
+├── scripts/
+│   └── 001_create_tables.sql       # Database schema
+└── public/
+    ├── data/
+    │   ├── users.json              # User data (deprecated)
+    │   ├── indian_laws_en.json     # Legal documents
+    │   └── chats/                  # Chat history (deprecated)
 ```
 
 ---
 
-## Getting Started
+## Database Schema
 
-### Prerequisites
+### Profiles Table
+```sql
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  name TEXT,
+  email TEXT,
+  language TEXT DEFAULT 'en',
+  last_login TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
 
-- **Node.js** 18.x or higher
-- **npm**, **yarn**, **pnpm**, or **bun**
+### Chat Sessions Table
+```sql
+CREATE TABLE chat_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
+  title TEXT DEFAULT 'New Chat',
+  language TEXT DEFAULT 'en',
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
 
-### Installation
+### Chat Messages Table
+```sql
+CREATE TABLE chat_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id UUID NOT NULL REFERENCES chat_sessions(id),
+  role TEXT NOT NULL ('user', 'assistant'),
+  content TEXT NOT NULL,
+  language TEXT DEFAULT 'en',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/SETHUPATHI2005/NyayaMithran.git
-   cd NyayaMithran
-   git checkout nyayamithran-nextjs-conversion
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
-   # or
-   bun install
-   ```
-
-3. **Set up environment variables (optional):**
-   ```bash
-   cp .env.example .env.local
-   # Add your API keys for enhanced LLM features (optional)
-   ```
-
-4. **Run the development server:**
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   # or
-   bun dev
-   ```
-
-5. **Open your browser:**
-   Navigate to `http://localhost:3000`
+All tables have RLS policies enabled to ensure users can only access their own data.
 
 ---
 
 ## Features
 
-### 1. **AI Legal Chat Assistant**
-- Ask legal questions in English or Hindi
-- RAG-powered responses with relevant legal references
-- Voice input support (Web Speech API)
-- File attachment capability
-- Chat history saved to local storage
+### 1. Authentication
+- Email/password signup with Supabase Auth
+- Email confirmation required
+- Secure session management with HTTP-only cookies
+- Multi-language support (English, Hindi)
 
-### 2. **Legal Document Search**
-- Search through Indian laws and acts
-- Keyword-based + topic fallback search
-- Categorized results
-- Multiple language support
+### 2. Chat Interface
+- Create multiple chat sessions
+- Real-time message history with Supabase
+- AI-powered legal responses
+- Voice input support (browser native)
+- File attachment support
 
-### 3. **Legal Document Generator**
-- Pre-made templates:
-  - Legal Complaints
-  - Petitions
-  - Affidavits
-  - Legal Notice Letters
-  - Agreements
-  - Appeals
-- Form-based generation
-- Download as text files
+### 3. Legal Information
+- RAG-powered search on Indian laws
+- Topic-based fallback suggestions
+- Keyword matching for legal documents
+- Category-based browsing
 
-### 4. **User Dashboard**
-- View chat session history
-- Statistics on questions asked
-- Quick access to recent conversations
+### 4. Document Generator
+- 6 legal document templates
+- Form-based input
+- PDF export functionality
+- Multi-language support
 
-### 5. **Legal Aid Locator** (Future)
-- Find nearby legal aid organizations
-- Contact information
-- Service areas
+### 5. Dashboard
+- Chat session statistics
+- Recent conversations
+- Quick access to features
+- User profile management
 
 ---
 
-## API Endpoints
+## API Routes
 
-### Authentication
+### Auth
 - `POST /api/auth/signup` - Register new user
-- `POST /api/auth/login` - Login user
+- `POST /api/auth/login` - Authenticate user
+- `GET /api/auth/callback` - Email confirmation callback
 
 ### Chat
-- `POST /api/chat/session` - Create new chat session
-- `POST /api/chat/message` - Send message & get response
-- `GET /api/chat/sessions/:userId` - List user's chat sessions
+- `POST /api/chat/session` - Create new session
+- `POST /api/chat/message` - Send message
+- `GET /api/chat/sessions/[userId]` - List user's sessions
+- `DELETE /api/chat/sessions/[userId]` - Delete session
 
-### Legal Resources
-- `GET /api/legal/search?q=query&lang=en` - Search legal documents
-- `GET /api/legal/categories` - Get available categories & topics
-
----
-
-## Services
-
-### RAG Service (`lib/services/rag.ts`)
-Retrieval-Augmented Generation for legal document search:
-- Loads `indian_laws_en.json`
-- Keyword extraction and similarity matching
-- Category-based filtering
-- Topic-based fallback for unmatched queries
-
-### LLM Service (`lib/services/llm.ts`)
-Generates legal guidance responses:
-- Integrates with Hugging Face (optional)
-- Falls back to template-based responses if API unavailable
-- Supports multiple languages
-- Entity extraction for laws, acts, etc.
-
-### Auth Service (`lib/services/auth.ts`)
-User authentication & management:
-- PBKDF2 password hashing
-- Token generation
-- User registration & login
-- Language preference management
-
-### Chat Service (`lib/services/chat.ts`)
-Session & message management:
-- Creates isolated chat sessions per user
-- Persists messages to file system
-- Auto-titles conversations from first user message
-- Session listing and deletion
+### Legal
+- `GET /api/legal/search?q=query` - Search legal documents
+- `GET /api/legal/categories` - Get legal categories
 
 ---
 
-## Environment Variables (Optional)
+## Environment Variables
 
+Required for Supabase:
 ```env
-# Hugging Face API for enhanced LLM responses
-HUGGINGFACE_API_KEY=hf_your_api_key_here
-
-# OpenAI API (future integration)
-OPENAI_API_KEY=sk_your_api_key_here
-
-# Node environment
-NODE_ENV=development
+NEXT_PUBLIC_SUPABASE_URL=        # Your Supabase project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=   # Supabase public anon key
+NEXT_PUBLIC_SITE_URL=            # Your app URL (for email redirects)
 ```
 
-**Note:** The app works without these APIs using fallback responses. Add them for enhanced functionality.
+Optional:
+```env
+HUGGINGFACE_API_KEY=             # For enhanced LLM responses
+OPENAI_API_KEY=                  # For OpenAI integration
+```
 
 ---
 
@@ -258,120 +288,87 @@ NODE_ENV=development
 
 ### Deploy to Vercel (Recommended)
 
-1. Push your code to GitHub
-2. Connect your GitHub repo to Vercel
-3. Vercel auto-detects Next.js and configures everything
-4. Set environment variables in Vercel Dashboard (if using external APIs)
-5. Deploy with one click!
+1. Push code to GitHub
+2. Go to https://vercel.com and import the repository
+3. Add environment variables in Vercel dashboard
+4. Deploy automatically on push
 
-```bash
-# Using Vercel CLI
-npm install -g vercel
-vercel
-```
+### Deploy Elsewhere
 
-### Deploy to Other Platforms
-
-**Docker:**
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
-**AWS Lambda / AWS EC2:**
-- Next.js builds to `.next/` directory
-- Run `npm run build && npm start`
-- Works with serverless and traditional hosting
+The app is fully serverless-ready and can be deployed to:
+- AWS Lambda
+- Google Cloud Run
+- Azure Functions
+- Self-hosted Node.js servers
 
 ---
 
 ## Development
 
-### Adding a New Page
+### Run Dev Server
+```bash
+npm run dev
+```
 
-1. Create `app/[section]/page.tsx`
-2. Use client components with `'use client'` for interactivity
-3. Import shared components from `components/`
-4. Use services from `lib/services/`
+### Build for Production
+```bash
+npm run build
+npm run start
+```
 
-### Adding a New API Endpoint
-
-1. Create `app/api/[section]/[action]/route.ts`
-2. Export `GET`, `POST`, `PUT`, `DELETE` functions as needed
-3. Use services for business logic
-4. Return `NextResponse.json()` responses
-
-### Adding a Service
-
-1. Create `lib/services/[service].ts`
-2. Export a singleton instance or class
-3. Import and use in API routes or components
+### Lint Code
+```bash
+npm run lint
+```
 
 ---
 
-## Features Preserved from Original
+## Troubleshooting
 
-✓ Multi-language support (English & Hindi)
-✓ AI-powered legal guidance
-✓ Document templates
-✓ Legal resource search
-✓ Voice input
-✓ File attachments
-✓ Chat history
-✓ User authentication
-✓ Responsive design
+### "Supabase URL or Key not found"
+- Check `.env.local` has correct NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+- Restart dev server after changing env vars
 
----
+### "Email confirmation failed"
+- Ensure NEXT_PUBLIC_SITE_URL matches your actual domain
+- Check Supabase email settings in Project → Authentication → Email
 
-## Known Limitations & Future Work
+### "Chat not saving"
+- Verify RLS policies are enabled in Supabase
+- Check user authentication with `getCurrentUser()` in services
 
-- Chat history uses file system (consider database for production)
-- LLM integration is optional (fallback templates available)
-- Legal aid locator not yet implemented (map integration needed)
-- No email verification for signups
-- No advanced user settings/preferences UI
-- Document download as .txt (could expand to PDF/Word)
+### "Legal search not working"
+- Ensure `public/data/indian_laws_en.json` exists
+- Verify RAG service can load the legal documents
 
 ---
 
 ## Contributing
 
-1. Create a feature branch: `git checkout -b feature/amazing-feature`
-2. Commit changes: `git commit -m 'Add amazing feature'`
-3. Push to branch: `git push origin feature/amazing-feature`
-4. Open a Pull Request
+We welcome contributions! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ---
 
 ## License
 
-This project is open source and available under the MIT License.
+MIT License - See LICENSE file for details
 
 ---
 
 ## Support
 
 For issues or questions:
-- Create an issue on GitHub
-- Check existing documentation
-- Review the original FastAPI implementation for reference
+- GitHub Issues: https://github.com/SETHUPATHI2005/NyayaMithran/issues
+- Email: support@nyayamithran.in
 
 ---
 
 ## Acknowledgments
 
-- Original NyayaMithran concept and design
-- Indian legal documents from official government sources
-- Community contributions and feedback
-
----
-
-**Last Updated:** March 2026
-**Conversion Status:** Complete - FastAPI → Next.js
-**Version:** 2.0.0
+- Built with Next.js, React, and Tailwind CSS
+- Legal data from Indian law resources
+- Powered by Supabase for database and authentication

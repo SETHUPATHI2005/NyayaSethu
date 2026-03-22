@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authService } from '@/lib/services/auth';
+import { signUp } from '@/lib/services/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,32 +8,29 @@ export async function POST(request: NextRequest) {
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { success: false, message: 'Missing required fields' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    const result = authService.register(email, password, name, language || 'en');
+    const result = await signUp(email, password, name, language || 'en');
 
-    if (!result.success) {
+    if (result.error) {
       return NextResponse.json(
-        { success: false, message: result.message },
+        { error: result.error },
         { status: 400 }
       );
     }
-
-    const token = authService.generateToken(result.user!.id);
 
     return NextResponse.json({
       success: true,
       message: result.message,
       user: result.user,
-      token,
     });
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

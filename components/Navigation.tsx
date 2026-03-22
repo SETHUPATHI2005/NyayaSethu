@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface NavigationProps {
   user: any;
@@ -12,10 +13,10 @@ interface NavigationProps {
 export default function Navigation({ user }: NavigationProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const supabase = createClient();
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push('/');
   };
 
@@ -44,7 +45,7 @@ export default function Navigation({ user }: NavigationProps) {
               {link.label}
             </Link>
           ))}
-          <span className="border-l border-white/30 pl-8">Hello, {user.name}</span>
+          <span className="border-l border-white/30 pl-8">Hello, {user.email}</span>
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors"
@@ -77,7 +78,7 @@ export default function Navigation({ user }: NavigationProps) {
               </Link>
             ))}
             <div className="border-t border-white/30 pt-4">
-              <p className="mb-4">Hello, {user.name}</p>
+              <p className="mb-4">Hello, {user.email}</p>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors w-full justify-center"

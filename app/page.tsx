@@ -61,10 +61,10 @@ export default function Home() {
             <option value="en">English</option>
             <option value="hi">हिंदी</option>
           </select>
-          <Link href="/login" className="px-4 py-2 border-2 border-white text-white rounded-lg font-medium hover:bg-white hover:text-primary transition-colors">
+          <Link href="/auth/login" className="px-4 py-2 border-2 border-white text-white rounded-lg font-medium hover:bg-white hover:text-primary transition-colors">
             {t.login}
           </Link>
-          <Link href="/signup" className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+          <Link href="/auth/sign-up" className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
             {t.signup}
           </Link>
         </div>

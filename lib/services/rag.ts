@@ -28,122 +28,104 @@ const DEFAULT_LEGAL_CONTENT = {
   'Copyrights Act': 'The Copyrights Act, 1957 protects literary and artistic works.',
 };
 
-class RAGService {
-  private documents: LegalDocument[] = [];
+// Initialize documents
+const documents: LegalDocument[] = Object.entries(DEFAULT_LEGAL_CONTENT).map(
+  ([title, content], index) => ({
+    id: `doc-${index}`,
+    title,
+    content,
+    category: 'Indian Law',
+    language: 'en',
+  })
+);
 
-  constructor() {
-    this.loadDocuments();
-  }
+function calculateSimilarity(query: string, text: string): number {
+  const queryTerms = query.toLowerCase().split(/\s+/);
+  const textLower = text.toLowerCase();
 
-  private loadDocuments() {
-    try {
-      // Create basic documents from defaults
-      Object.entries(DEFAULT_LEGAL_CONTENT).forEach(([title, content], index) => {
-        this.documents.push({
-          id: `doc-${index}`,
-          title,
-          content,
-          category: 'Indian Law',
-          language: 'en',
-        });
-      });
-    } catch (error) {
-      console.error('Error loading legal documents:', error);
-      this.documents = [];
+  let matches = 0;
+  for (const term of queryTerms) {
+    if (textLower.includes(term)) {
+      matches++;
     }
   }
 
-  private calculateSimilarity(query: string, text: string): number {
-    const queryTerms = query.toLowerCase().split(/\s+/);
-    const textLower = text.toLowerCase();
-
-    let matches = 0;
-    for (const term of queryTerms) {
-      if (textLower.includes(term)) {
-        matches++;
-      }
-    }
-
-    return matches / Math.max(queryTerms.length, 1);
-  }
-
-  search(query: string, topK: number = 5): SearchResult[] {
-    if (!query.trim()) {
-      return [];
-    }
-
-    const results = this.documents
-      .map(doc => ({
-        id: doc.id,
-        title: doc.title,
-        excerpt: doc.content.substring(0, 200),
-        score: this.calculateSimilarity(query, `${doc.title} ${doc.content}`),
-        category: doc.category,
-      }))
-      .filter(r => r.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topK);
-
-    // If no results found, return topic-based fallback
-    if (results.length === 0) {
-      return this.getTopicFallback(query);
-    }
-
-    return results;
-  }
-
-  private getTopicFallback(query: string): SearchResult[] {
-    const queryLower = query.toLowerCase();
-    const keywords: { [key: string]: string[] } = {
-      'criminal': ['Indian Penal Code', 'Criminal Procedure Code'],
-      'civil': ['Civil Procedure Code', 'Constitution of India'],
-      'contract': ['Indian Contract Act', 'Sale of Goods Act'],
-      'business': ['Limited Liability Partnership Act', 'Patents Act'],
-      'intellectual': ['Patents Act', 'Trademarks Act', 'Copyrights Act'],
-      'property': ['Sale of Goods Act', 'Constitution of India'],
-    };
-
-    let relevantDocs: string[] = [];
-    for (const [keyword, docs] of Object.entries(keywords)) {
-      if (queryLower.includes(keyword)) {
-        relevantDocs = docs;
-        break;
-      }
-    }
-
-    if (relevantDocs.length === 0) {
-      // Return first few documents as general fallback
-      relevantDocs = Object.keys(DEFAULT_LEGAL_CONTENT).slice(0, 3);
-    }
-
-    return relevantDocs
-      .map((title, index) => ({
-        id: `fallback-${index}`,
-        title,
-        excerpt: DEFAULT_LEGAL_CONTENT[title as keyof typeof DEFAULT_LEGAL_CONTENT] || '',
-        score: 0.5,
-        category: 'Indian Law',
-      }))
-      .slice(0, 5);
-  }
-
-  getCategories(): string[] {
-    const categories = new Set(this.documents.map(d => d.category));
-    return Array.from(categories);
-  }
-
-  getDocumentsByCategory(category: string): SearchResult[] {
-    return this.documents
-      .filter(d => d.category === category)
-      .map(d => ({
-        id: d.id,
-        title: d.title,
-        excerpt: d.content.substring(0, 200),
-        score: 1,
-        category: d.category,
-      }));
-  }
+  return matches / Math.max(queryTerms.length, 1);
 }
 
-export const ragService = new RAGService();
+export function search(query: string, topK: number = 5): SearchResult[] {
+  if (!query.trim()) {
+    return [];
+  }
+
+  const results = documents
+    .map(doc => ({
+      id: doc.id,
+      title: doc.title,
+      excerpt: doc.content.substring(0, 200),
+      score: calculateSimilarity(query, `${doc.title} ${doc.content}`),
+      category: doc.category,
+    }))
+    .filter(r => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, topK);
+
+  if (results.length === 0) {
+    return getTopicFallback(query);
+  }
+
+  return results;
+}
+
+function getTopicFallback(query: string): SearchResult[] {
+  const queryLower = query.toLowerCase();
+  const keywords: { [key: string]: string[] } = {
+    criminal: ['Indian Penal Code', 'Criminal Procedure Code'],
+    civil: ['Civil Procedure Code', 'Constitution of India'],
+    contract: ['Indian Contract Act', 'Sale of Goods Act'],
+    business: ['Limited Liability Partnership Act', 'Patents Act'],
+    intellectual: ['Patents Act', 'Trademarks Act', 'Copyrights Act'],
+    property: ['Sale of Goods Act', 'Constitution of India'],
+  };
+
+  let relevantDocs: string[] = [];
+  for (const [keyword, docs] of Object.entries(keywords)) {
+    if (queryLower.includes(keyword)) {
+      relevantDocs = docs;
+      break;
+    }
+  }
+
+  if (relevantDocs.length === 0) {
+    relevantDocs = Object.keys(DEFAULT_LEGAL_CONTENT).slice(0, 3);
+  }
+
+  return relevantDocs
+    .map((title, index) => ({
+      id: `fallback-${index}`,
+      title,
+      excerpt: DEFAULT_LEGAL_CONTENT[title as keyof typeof DEFAULT_LEGAL_CONTENT] || '',
+      score: 0.5,
+      category: 'Indian Law',
+    }))
+    .slice(0, 5);
+}
+
+export function getCategories(): string[] {
+  const categories = new Set(documents.map(d => d.category));
+  return Array.from(categories);
+}
+
+export function getDocumentsByCategory(category: string): SearchResult[] {
+  return documents
+    .filter(d => d.category === category)
+    .map(d => ({
+      id: d.id,
+      title: d.title,
+      excerpt: d.content.substring(0, 200),
+      score: 1,
+      category: d.category,
+    }));
+}
+
 export type { SearchResult, LegalDocument };

@@ -3,22 +3,36 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChatInterface from '@/components/ChatInterface';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push('/login');
-    }
-    setIsLoading(false);
-  }, [router]);
+    const getUser = async () => {
+      try {
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser();
+        
+        if (authUser) {
+          setUser(authUser);
+        } else {
+          router.push('/auth/login');
+        }
+      } catch (error) {
+        console.error('Error getting user:', error);
+        router.push('/auth/login');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getUser();
+  }, [router, supabase]);
 
   if (isLoading) {
     return (

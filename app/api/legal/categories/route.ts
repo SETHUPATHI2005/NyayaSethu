@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ragService } from '@/lib/services/rag';
+import { getCategories } from '@/lib/services/rag';
 
 export async function GET(request: NextRequest) {
   try {
-    const categories = ragService.getCategories();
-    const topics = ragService.getTopicsForFallback();
+    const categories = getCategories();
 
     return NextResponse.json({
       categories,
-      topics,
+      topics: categories,
     });
   } catch (error) {
     console.error('Legal categories error:', error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

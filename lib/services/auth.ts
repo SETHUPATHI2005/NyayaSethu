@@ -1,122 +1,101 @@
-import crypto from 'crypto';
+import { createClient } from '@/lib/supabase/server';
 
-export interface User {
-  id: string;
-  email: string;
-  password: string; // hashed
-  name: string;
-  language: string;
-  createdAt: string;
-  lastLogin: string;
+export interface AuthResponse {
+  user?: any;
+  error?: string;
+  message?: string;
 }
 
-// In-memory storage for demo purposes
-// For production, integrate with a database like Supabase, Neon, or AWS RDS
-const memoryStore: { users: User[] } = { users: [] };
+export async function signUp(email: string, password: string, name: string, language: string = 'en'): Promise<AuthResponse> {
+  const supabase = await createClient();
 
-class AuthService {
-  private users: User[] = memoryStore.users;
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        display_name: name,
+        language,
+      },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+    },
+  });
 
-  private hashPassword(password: string): string {
-    return crypto
-      .pbkdf2Sync(password, 'nyayamithran_salt', 10000, 64, 'sha512')
-      .toString('hex');
+  if (authError) {
+    return { error: authError.message };
   }
 
-  private verifyPassword(password: string, hash: string): boolean {
-    return this.hashPassword(password) === hash;
-  }
+  if (authData.user) {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({
+        id: authData.user.id,
+        name,
+        email,
+        language,
+      });
 
-  register(email: string, password: string, name: string, language: string = 'en'): { success: boolean; message: string; user?: Omit<User, 'password'> } {
-    // Validate email
-    if (!email || !email.includes('@')) {
-      return { success: false, message: 'Invalid email address' };
-    }
-
-    // Check if user exists
-    if (this.users.some(u => u.email === email)) {
-      return { success: false, message: 'User already exists' };
-    }
-
-    // Validate password
-    if (!password || password.length < 6) {
-      return { success: false, message: 'Password must be at least 6 characters' };
-    }
-
-    const user: User = {
-      id: crypto.randomUUID(),
-      email,
-      password: this.hashPassword(password),
-      name,
-      language,
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString(),
-    };
-
-    this.users.push(user);
-
-    const { password: _, ...userWithoutPassword } = user;
-    return {
-      success: true,
-      message: 'User registered successfully',
-      user: userWithoutPassword,
-    };
-  }
-
-  login(email: string, password: string): { success: boolean; message: string; user?: Omit<User, 'password'> } {
-    const user = this.users.find(u => u.email === email);
-
-    if (!user) {
-      return { success: false, message: 'User not found' };
-    }
-
-    if (!this.verifyPassword(password, user.password)) {
-      return { success: false, message: 'Invalid password' };
-    }
-
-    // Update last login
-    user.lastLogin = new Date().toISOString();
-
-    const { password: _, ...userWithoutPassword } = user;
-    return {
-      success: true,
-      message: 'Login successful',
-      user: userWithoutPassword,
-    };
-  }
-
-  getUserById(id: string): Omit<User, 'password'> | undefined {
-    const user = this.users.find(u => u.id === id);
-    if (user) {
-      const { password: _, ...userWithoutPassword } = user;
-      return userWithoutPassword;
-    }
-    return undefined;
-  }
-
-  updateUserLanguage(userId: string, language: string): boolean {
-    const user = this.users.find(u => u.id === userId);
-    if (user) {
-      user.language = language;
-      return true;
-    }
-    return false;
-  }
-
-  verifyToken(token: string): Omit<User, 'password'> | null {
-    // Simple token verification - in production, use JWT
-    try {
-      const decoded = Buffer.from(token, 'base64').toString('utf-8');
-      const [userId] = decoded.split(':');
-      return this.getUserById(userId) || null;
-    } catch {
-      return null;
+    if (profileError) {
+      return { error: `Profile creation failed: ${profileError.message}` };
     }
   }
 
-  generateToken(userId: string): string {
-    return Buffer.from(`${userId}:${Date.now()}`).toString('base64');
-  }
+  return {
+    user: authData.user,
+    message: 'Sign up successful! Please check your email to confirm your account.',
+  };
 }
 
-export const authService = new AuthService();
+export async function login(email: string, password: string): Promise<AuthResponse> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  if (data.user) {
+    await supabase
+      .from('profiles')
+      .update({ last_login: new Date().toISOString() })
+      .eq('id', data.user.id);
+  }
+
+  return { user: data.user };
+}
+
+export async function logout(): Promise<AuthResponse> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { message: 'Logged out successfully' };
+}
+
+export async function getCurrentUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  return { user, error };
+}
+
+export async function getUserProfile(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+
+  return { profile: data, error };
+}

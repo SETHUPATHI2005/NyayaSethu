@@ -1,19 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chatService } from '@/lib/services/chat';
+import { createSession } from '@/lib/services/chat';
+import { getCurrentUser } from '@/lib/services/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { userId, language } = body;
+    const { user, error: userError } = await getCurrentUser();
 
-    if (!userId) {
+    if (userError || !user) {
       return NextResponse.json(
-        { success: false, message: 'Missing userId' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
-    const session = chatService.createSession(userId, language || 'en');
+    const body = await request.json();
+    const { language } = body;
+
+    const session = await createSession(user.id, language || 'en');
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Failed to create session' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -23,7 +33,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Chat session error:', error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
